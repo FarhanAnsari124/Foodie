@@ -45,10 +45,9 @@ export const signUp = async (req, res) => {
       data: newUser,
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Something went wrong",
-      reason: error.message,
+      message: error.message,
     });
   }
 };
@@ -87,8 +86,7 @@ export const signIn = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
-      reason: error.message,
+      message: error.message,
     });
   }
 };
@@ -154,7 +152,7 @@ export const verifyOtp = async (req, res) => {
     user.isOtpVerified = true;
     user.resetOtp = undefined;
     user.otpExpires = undefined;
-    await user.save()
+    await user.save();
     return res.status(200).json({
       success: true,
       message: "OTP verified successfully",
@@ -162,43 +160,66 @@ export const verifyOtp = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
-      reason: error.message,
+      message: error.message,
     });
   }
 };
-
-export const resetPassword = async (req,res) =>{
+export const resetPassword = async (req, res) => {
   try {
-    const {email,password,confirmPassword} = req.body
-    if(password !== confirmPassword){
-        res.status(400).json({
+    const { email, password, confirmPassword } = req.body;
+    if (password !== confirmPassword) {
+      res.status(400).json({
         success: false,
         message: "password doesn't match with confirm password",
       });
     }
-    const user = await User.findOne({email})
-    if(!user || !user.isOtpVerified){
+    const user = await User.findOne({ email });
+    if (!user || !user.isOtpVerified) {
       return res.status(400).json({
         success: false,
         message: "Otp is not verified!",
       });
     }
-    const hashedPassword = await bcrypt.hash(password,10)
-    user.password = hashedPassword
-    user.isOtpVerified = false
-    await user.save()
-    
-    return res.status(200).json({
-      success:true,
-      message:"Password forgot successfully!"
-    })
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.isOtpVerified = false;
+    await user.save();
 
+    return res.status(200).json({
+      success: true,
+      message: "Password forgot successfully!",
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
-      reason: error.message,
+      message: error.message,
     });
   }
-}
+};
+export const googleAuth = async (req, res) => {
+  try {
+    const { fullName, email, mobile, role } = req.body;
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        fullName: fullName || email.split("@")[0],
+        email,
+        mobile: mobile || "99XXXXXXXX",
+        role: role || "User",
+      });
+    }
+    const token = await genToken(user._id);
+    res.cookie("token", token, {
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+    return res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

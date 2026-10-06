@@ -11,6 +11,7 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [err,setErr] = useState("")
   const navigate = useNavigate();
   const handleSendOtp = async () => {
     try {
@@ -19,11 +20,12 @@ const ForgotPassword = () => {
         {
           email,
         },
-        { withCredentials: true },
-        setStep((prev) => prev + 1),
+        { withCredentials: true }
       );
+      setStep((prev) => prev + 1),
+      setErr("")
     } catch (error) {
-      console.log(error.message);
+      setErr(error.response.data.message)
     }
   };
   const handleVerifyOtp = async () => {
@@ -34,11 +36,12 @@ const ForgotPassword = () => {
           email,
           otp,
         },
-        { withCredentials: true },
-        setStep((prev) => prev + 1),
+        { withCredentials: true }
       );
+      setStep((prev) => prev + 1),
+      setErr("")
     } catch (error) {
-      console.log(error.message);
+      setErr(error.response.data.message)
     }
   };
   const handleResetPassword = async () => {
@@ -52,9 +55,10 @@ const ForgotPassword = () => {
         },
         { withCredentials: true },
       );
+      setErr("")
       navigate("/signin");
     } catch (error) {
-      console.log(error.message);
+      setErr(error.response.data.message)
     }
   };
   return (
@@ -86,6 +90,7 @@ const ForgotPassword = () => {
                 style={{ border: `1px solid ${borderColor}` }}
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
+                required
               />
             </div>
             <button
@@ -94,6 +99,7 @@ const ForgotPassword = () => {
             >
               Send OTP
             </button>
+            <p className="text-red-600 text-center mt-4.5">{err? `*${err}`:''}</p>
           </div>
         )}
         {step == 2 && (
@@ -112,14 +118,17 @@ const ForgotPassword = () => {
                 style={{ border: `1px solid ${borderColor}` }}
                 onChange={(e) => setOtp(e.target.value)}
                 value={otp}
+                required
               />
             </div>
+            
             <button
               className={`w-full cursor-pointer font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323]`}
               onClick={() => handleVerifyOtp()}
             >
               Verify
             </button>
+            <p className="text-red-600 text-center mt-4.5">{err? `*${err}`:``}</p>
           </div>
         )}
         {step == 3 && (
@@ -138,6 +147,7 @@ const ForgotPassword = () => {
                 style={{ border: `1px solid ${borderColor}` }}
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
+                required
               />
             </div>
             <div className="mb-6">
@@ -154,6 +164,7 @@ const ForgotPassword = () => {
                 style={{ border: `1px solid ${borderColor}` }}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
+                required
               />
             </div>
             <button
@@ -162,6 +173,7 @@ const ForgotPassword = () => {
             >
               Reset Password
             </button>
+            <p className="text-red-600 text-center mt-4.5">{err? `*${err}`:''}</p>
           </div>
         )}
       </div>
