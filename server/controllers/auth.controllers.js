@@ -1,9 +1,10 @@
 import User from "../models/user.model.js";
 import genToken from "../utils/token.js";
+import bcrypt from "bcryptjs";
 export const signUp = async (req, res) => {
   try {
     const { fullName, email, password, mobile, role } = req.body;
-    const existingUser = await User.find({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         succeess: false,
@@ -46,27 +47,28 @@ export const signUp = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Something went wrong",
+      reason: error.message,
     });
   }
 };
 export const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const existingUser = await User.find({ email });
+    const existingUser = await User.findOne({ email });
     if (!existingUser) {
       return res.status(400).json({
         succeess: false,
         message: "User doesn't exist! Please SignUp.",
       });
     }
-    const matchedPassword = bcrypt.compare(password, existingUser.password);
+    const matchedPassword = await bcrypt.compare(password, existingUser.password);
     if (!matchedPassword) {
       return res.status(400).json({
         success: false,
         message: "Invalid credentials",
       });
     }
-    const token = genToken(existingUser._id);
+    const token = await genToken(existingUser._id);
     res.cookie("token", token, {
       secure: false,
       sameSite: "strict",
@@ -76,11 +78,13 @@ export const signIn = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User signed In successfully!",
+      data:existingUser
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
+      reason: error.message,
     });
   }
 };
@@ -95,6 +99,7 @@ export const signOut = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
+      reason: error.message,
     });
   }
 };
