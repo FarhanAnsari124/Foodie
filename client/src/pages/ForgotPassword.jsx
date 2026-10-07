@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { serverURl } from "../App";
+import {ClipLoader} from 'react-spinners'
 
 const ForgotPassword = () => {
   const borderColor = "#ddd";
@@ -13,7 +14,9 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [err,setErr] = useState("")
   const navigate = useNavigate();
+  const [loading,setLoading] = useState(false)
   const handleSendOtp = async () => {
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverURl}/api/auth/send-otp`,
@@ -22,13 +25,16 @@ const ForgotPassword = () => {
         },
         { withCredentials: true }
       );
+      setLoading(false);
       setStep((prev) => prev + 1),
       setErr("")
     } catch (error) {
+        setLoading(false);
       setErr(error.response.data.message)
     }
   };
   const handleVerifyOtp = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverURl}/api/auth/verify-otp`,
@@ -38,13 +44,16 @@ const ForgotPassword = () => {
         },
         { withCredentials: true }
       );
+      setLoading(false)
       setStep((prev) => prev + 1),
       setErr("")
     } catch (error) {
+        setLoading(false)
       setErr(error.response.data.message)
     }
   };
   const handleResetPassword = async () => {
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverURl}/api/auth/reset-password`,
@@ -55,9 +64,11 @@ const ForgotPassword = () => {
         },
         { withCredentials: true },
       );
+      setLoading(false)
       setErr("")
       navigate("/signin");
     } catch (error) {
+        setLoading(false)
       setErr(error.response.data.message)
     }
   };
@@ -96,8 +107,9 @@ const ForgotPassword = () => {
             <button
               className={`w-full cursor-pointer font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323]`}
               onClick={() => handleSendOtp(email)}
+              disabled={loading}
             >
-              Send OTP
+              {loading ? <ClipLoader size={20} color="white"/> :"Send OTP"}
             </button>
             <p className="text-red-600 text-center mt-4.5">{err? `*${err}`:''}</p>
           </div>
@@ -125,8 +137,9 @@ const ForgotPassword = () => {
             <button
               className={`w-full cursor-pointer font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323]`}
               onClick={() => handleVerifyOtp()}
+              disabled={loading}
             >
-              Verify
+              {loading ? <ClipLoader size={20} color="white"/> :"Verify"}
             </button>
             <p className="text-red-600 text-center mt-4.5">{err? `*${err}`:``}</p>
           </div>
@@ -171,7 +184,7 @@ const ForgotPassword = () => {
               className={`w-full cursor-pointer font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323]`}
               onClick={() => handleResetPassword()}
             >
-              Reset Password
+              {loading ? <ClipLoader size={20} color="white"/> :"Reset Password"}
             </button>
             <p className="text-red-600 text-center mt-4.5">{err? `*${err}`:''}</p>
           </div>
