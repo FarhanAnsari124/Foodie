@@ -8,19 +8,19 @@ export const signUp = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
-        succeess: false,
+        success: false,
         message: "User already exists! Please signIn.",
       });
     }
     if (password.length < 6) {
       return res.status(400).json({
-        succeess: false,
+        success: false,
         message: "Passwords should be at least 6 characters long.",
       });
     }
     if (mobile.length < 10) {
       return res.status(400).json({
-        succeess: false,
+        success: false,
         message: "Invalid Phone Number! Enter atleast 10 digits Number",
       });
     }
@@ -57,7 +57,7 @@ export const signIn = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
       return res.status(400).json({
-        succeess: false,
+        success: false,
         message: "User doesn't exist! Please SignUp.",
       });
     }
@@ -168,7 +168,7 @@ export const resetPassword = async (req, res) => {
   try {
     const { email, password, confirmPassword } = req.body;
     if (password !== confirmPassword) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "password doesn't match with confirm password",
       });
@@ -215,7 +215,11 @@ export const googleAuth = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return res.status(200).json(user);
+    return res.status(200).json({
+      success: true,
+      message: "Google authentication successful",
+      data: user,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
