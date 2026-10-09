@@ -6,10 +6,12 @@ import ForgotPassword from './pages/ForgotPassword'
 import useGetCurrentUser from './hooks/useGetCurrentUser'
 import { useSelector } from 'react-redux'
 import Home from './pages/Home'
+import useGetCity from './hooks/useGetCity'
 export const serverURl = "http://localhost:8000"
 
 const App = () => {
   const {loading}= useGetCurrentUser()
+  useGetCity()
   const {userData} = useSelector(state=>state.user)
   if(loading){
     return <div className='min-h-screen flex justify-center items-center text-5xl text-[#ff4d2d]'>Loading...</div>
@@ -20,6 +22,7 @@ const App = () => {
       <Route path='/signin' element={!userData ?<SignIn/>:<Navigate to={"/"}/>} />
       <Route path='/forgot-password' element={!userData ?<ForgotPassword/>:<Navigate to={"/"}/>} />
       <Route path='/' element={userData?<Home/>:<Navigate to={"/signin"}/>}></Route>
+      {/* <Route path='/' element={<Home/>}></Route> */}
     </Routes>
   )
 }
