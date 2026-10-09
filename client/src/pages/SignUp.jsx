@@ -61,8 +61,10 @@ const SignUp = () => {
         email: result.user.email,
         role,
         mobile,
+      },{
+        withCredentials:true
       });
-      dispatch(setUserData(data))
+      dispatch(setUserData(data.data))
     } catch (error) {
       console.log(error, error.message);
     }

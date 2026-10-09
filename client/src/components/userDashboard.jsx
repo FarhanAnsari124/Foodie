@@ -45,7 +45,7 @@ const userDashboard = () => {
       <div className="md:w-[60%] lg:w-[40%] h-17.5 bg-white shadow-xl hidden md:flex rounded-lg items-center gap-5">
         <div className="flex items-center w-[30%] overflow-hidden gap-2.5 px-2.5 border-r-2 border-gray-400">
           <FaLocationDot size={25} className="text-[#ff4d2d] " />
-          <div className="w-[80%] truncate text-gray-600">kanpur</div>
+          <div className="w-[80%] truncate text-gray-600">{city}</div>
         </div>
         <div className="w-[80%] flex items-center gap-2.5">
           <IoIosSearch size={25} className="text-[#ff4d2d]" />
