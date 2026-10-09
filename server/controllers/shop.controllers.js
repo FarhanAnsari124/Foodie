@@ -47,3 +47,23 @@ export const createEditShop = async (req, res) => {
 	}
 };
 
+export const getCurrentShop = async (req, res) => {
+  try {
+	const shop = await Shop.findOne({owner:req.userId}).populate("owner items")
+	if (!shop) {
+	  return null;
+	}
+	return res.status(200).json({
+	  success: true,
+	  message: "Shop fetched successfully",
+	  data: shop,
+	});
+  } catch (error) {
+	return res.status(500).json({
+	  success: false,
+	  message: error.message,
+	});
+  }
+};
+
+
