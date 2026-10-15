@@ -23,16 +23,20 @@ export const createEditShop = async (req, res) => {
 				state,
 				address,
 			});
-		}else{
-            shop = await Shop.findByIdAndUpdate(shop._id,{
-				name,
-				image,
-				owner: req.userId,
-				city,
-				state,
-				address,
-			},{new:true});
-        }
+		} else {
+			shop = await Shop.findByIdAndUpdate(
+				shop._id,
+				{
+					name,
+					image,
+					owner: req.userId,
+					city,
+					state,
+					address,
+				},
+				{ new: true },
+			);
+		}
 		await shop.populate("owner");
 		return res.status(201).json({
 			success: true,
@@ -48,22 +52,22 @@ export const createEditShop = async (req, res) => {
 };
 
 export const getCurrentShop = async (req, res) => {
-  try {
-	const shop = await Shop.findOne({owner:req.userId}).populate("owner items")
-	if (!shop) {
-	  return null;
+	try {
+		const shop = await Shop.findOne({ owner: req.userId })
+			.populate("owner")
+			.populate("item");
+		if (!shop) {
+			return null;
+		}
+		return res.status(200).json({
+			success: true,
+			message: "Shop fetched successfully",
+			data: shop,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
 	}
-	return res.status(200).json({
-	  success: true,
-	  message: "Shop fetched successfully",
-	  data: shop,
-	});
-  } catch (error) {
-	return res.status(500).json({
-	  success: false,
-	  message: error.message,
-	});
-  }
 };
-
-
