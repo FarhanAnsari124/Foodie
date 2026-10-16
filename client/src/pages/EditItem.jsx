@@ -1,22 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import OwnerDashboard from "../components/OwnerDashboard";
 import { useDispatch, useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import axios from "axios";
 import { serverURl } from "../App";
 import { setMyShopData } from "../redux/owner.slice.js";
+import { ClipLoader } from "react-spinners";
 
 const EditItem = () => {
 	const navigate = useNavigate();
 	const { myShopData } = useSelector((state) => state.owner);
+    const {itemId} = useParams()
+    const [currentItem,setCurrentItem] = useState(null)
 	const [name, setName] = useState("");
 	const [price, setPrice] = useState(0);
 	const [frontendImage, setFrontendImage] = useState(null);
 	const [backendImage, setBackendImage] = useState(null);
 	const [category, setCategory] = useState("");
 	const [foodType, setFoodType] = useState("veg");
+    const [loading,setLoading] = useState(false)
 	const categories = [
 		"Snacks",
 		"Main Course",
@@ -33,11 +37,14 @@ const EditItem = () => {
 	const dispatch = useDispatch();
 	const handleImage = (e) => {
 		const file = e.target.files[0];
-		setBackendImage(file);
-		setFrontendImage(URL.createObjectURL(file));
+		if(file){
+            setBackendImage(file);
+		    setFrontendImage(URL.createObjectURL(file));
+        }
 	};
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+        setLoading(true)
 		try {
 			const formData = new FormData();
 			formData.append("name", name);
@@ -48,22 +55,40 @@ const EditItem = () => {
 				formData.append("image", backendImage);
 			}
 			const result = await axios.post(
-				`${serverURl}/api/item/add-item`,
+				`${serverURl}/api/item/edit-item/${itemId}`,
 				formData,
 				{
 					withCredentials: true,
 				},
 			);
 			dispatch(setMyShopData(result.data.data));
-			console.log(result.data);
+            setLoading(false)
+            navigate("/")
 		} catch (error) {
 			console.log(error);
-		}
+		}finally{
+            setLoading(false)
+        }
 	};
-	// useEffect(() => {
-	// 	setName(myShopData?.item[0]?.name || "");
-	// 	setFrontendImage(myShopData?.item[0]?.image || null);
-	// }, [myShopData]);
+    useEffect(()=>{
+        const handleGetItemById = async()=>{
+            try {
+                const result = await axios.get(`${serverURl}/api/item/get-by-id/${itemId}`,{withCredentials:true})
+                setCurrentItem(result.data.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        handleGetItemById()
+    },[itemId])
+
+    useEffect(()=>{
+        setName(currentItem?.name || "")
+        setPrice(currentItem?.price || 0)
+        setFrontendImage(currentItem?.image || "")
+        setCategory(currentItem?.category || "")
+        setFoodType(currentItem?.foodType || "")
+    },[currentItem])
 
 	return (
 		<div className="flex justify-center flex-col items-center p-6 bg-linear-to-br from-orange-100 relative to-white min-h-screen">
@@ -167,10 +192,10 @@ const EditItem = () => {
 					</div>
 
 					<button
-						className="w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer"
+						className="w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer" disabled={loading}
 						type="submit"
 					>
-						Save
+                        {loading? <ClipLoader size={20} color="white" className="text-center"/>:"Save"}
 					</button>
 				</form>
 			</div>

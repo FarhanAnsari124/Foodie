@@ -34,10 +34,10 @@ const OwnerDashboard = () => {
 								{myShopData.name}
 							</h1>
 							<p className="text-gray-500">
-								{myShopData.city},{myShopData.state}
+								{myShopData.address}
 							</p>
 							<p className="text-gray-500 mb-4">
-								{myShopData.address}
+								{myShopData.city},{myShopData.state}
 							</p>
 						</div>
 					</div>

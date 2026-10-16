@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { serverURl } from "../App";
 import { setUserData } from "../redux/user.slice";
+import { useNavigate } from "react-router-dom";
 const Nav = () => {
 	const { userData } = useSelector((state) => state.user);
 	const { myShopData } = useSelector((state) => state.owner);
@@ -16,6 +17,7 @@ const Nav = () => {
 	const [showSearch, setShowSearch] = useState(false);
 	const { city } = useSelector((state) => state.user);
 	const dispatch = useDispatch();
+	const navigate = useNavigate()
 	const handleSignOut = async () => {
 		try {
 			const result = await axios.get(`${serverURl}/api/auth/signout`, {
@@ -86,11 +88,11 @@ const Nav = () => {
 					<div className="flex items-center gap-2">
 						{myShopData && (
 							<>
-								<button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
+								<button className="hidden md:flex items-center gap-1 p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]" onClick={()=> navigate('/add-item')}>
 									<FaPlus size={20} />
 									<span>Add Food Item</span>
 								</button>
-								<button className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]">
+								<button className="md:hidden flex items-center p-2 cursor-pointer rounded-full bg-[#ff4d2d]/10 text-[#ff4d2d]" onClick={()=> navigate('/add-item')}>
 									<FaPlus size={20} />
 								</button>
 							</>

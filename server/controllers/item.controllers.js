@@ -24,7 +24,7 @@ export const addItem = async (req, res) => {
 			image,
 			shop: shop._id,
 		});
-		
+
 		await item.populate("shop");
 		shop.item.push(item._id);
 		await shop.save();
@@ -47,19 +47,18 @@ export const editItem = async (req, res) => {
 	try {
 		const itemId = req.params.itemId;
 		const { name, category, foodType, price } = req.body;
-		let image = "";
+		const updateData ={
+			name,
+			category,
+			foodType,
+			price,
+		}
 		if (req.file) {
-			image = await uploadOnCloudinary(req.file.path);
+			updateData.image = await uploadOnCloudinary(req.file.path);
 		}
 		const item = await Item.findByIdAndUpdate(
 			itemId,
-			{
-				name,
-				category,
-				foodType,
-				price,
-				image,
-			},
+			updateData,
 			{ new: true },
 		);
 		if (!item) {
@@ -68,10 +67,11 @@ export const editItem = async (req, res) => {
 				message: "Item not found with current item Id",
 			});
 		}
-		return res.status(201).json({
+		const shop = await Shop.findOne({owner:req.userId}).populate("item")
+		return res.status(200).json({
 			success: true,
 			message: "Item Updated successfully",
-			data: item,
+			data: shop,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -80,3 +80,26 @@ export const editItem = async (req, res) => {
 		});
 	}
 };
+export const getItemById = async (req,res)=> {
+	try {
+		const itemId = req.params.itemId
+		const item = await Item.findById(itemId)
+		if(!item){
+			res.status(400).json({
+				success: false,
+				message: "Item not found with current item Id",
+			});
+		}
+		return res.status(200).json({
+			success: true,
+			message: "Item Fetched successfully",
+			data: item,
+		});
+
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+}
