@@ -3,6 +3,7 @@ import Nav from "./Nav";
 import { useSelector } from "react-redux";
 import { FaUtensils, FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import OwnerItemCard from "./OwnerItemCard";
 
 const OwnerDashboard = () => {
 	const { myShopData } = useSelector((state) => state.owner);
@@ -49,13 +50,12 @@ const OwnerDashboard = () => {
 										Add Your Food Item
 									</h2>
 									<p className="text-gray-600 mb-4 text-sm sm:text-base">
-										Share your delicious creations with our customers by adding them to the menu.
+										Share your delicious creations with our
+										customers by adding them to the menu.
 									</p>
 									<button
 										className="bg-[#ff4d2d] text-white px-5 sm:px-6 rounded-full font-medium shadow-md hover:bg-orange-600 transition-colors duration-200"
-										onClick={() =>
-											navigate("/add-item")
-										}
+										onClick={() => navigate("/add-item")}
 									>
 										Add Food
 									</button>
@@ -63,6 +63,11 @@ const OwnerDashboard = () => {
 							</div>
 						</div>
 					)}
+					{myShopData.item.length > 0 && <div className="flex flex-col items-center gap-4 w-full max-w-3xl">
+						{myShopData.item.map((item,index)=>(
+							<OwnerItemCard data={item} key={index}/>
+						))}
+					</div>}
 				</div>
 			) : (
 				<div className="flex justify-center p-4 sm:p-6">

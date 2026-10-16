@@ -79,7 +79,7 @@ const AddItem = () => {
 						<FaUtensils className="text-[#ff4d2d] w-16 h-16" />
 					</div>
 					<div className="text-3xl font-extrabold text-gray-900">
-						{myShopData ? "Edit Food Item" : "Add Food Item"}
+						Add Food Item
 					</div>
 				</div>
 				<form className="space-y-5" onSubmit={handleSubmit}>

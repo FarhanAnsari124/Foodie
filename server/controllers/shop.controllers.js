@@ -37,7 +37,7 @@ export const createEditShop = async (req, res) => {
 				{ new: true },
 			);
 		}
-		await shop.populate("owner");
+		await shop.populate("owner").populate("item");
 		return res.status(201).json({
 			success: true,
 			message: "Shop created/Updated successully",

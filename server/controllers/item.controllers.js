@@ -24,11 +24,16 @@ export const addItem = async (req, res) => {
 			image,
 			shop: shop._id,
 		});
+		
 		await item.populate("shop");
+		shop.item.push(item._id);
+		await shop.save();
+		await shop.populate("item");
+
 		return res.status(201).json({
 			success: true,
 			message: "Item addedd successfully",
-			data: item,
+			data: shop,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -46,7 +51,7 @@ export const editItem = async (req, res) => {
 		if (req.file) {
 			image = await uploadOnCloudinary(req.file.path);
 		}
-		const item = Item.findByIdAndUpdate(
+		const item = await Item.findByIdAndUpdate(
 			itemId,
 			{
 				name,
