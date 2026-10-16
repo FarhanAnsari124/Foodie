@@ -29,8 +29,8 @@ const CreateEditShop = () => {
 		try {
 			const formData = new FormData();
 			formData.append("name", name);
-			formData.append("city", city);
-			formData.append("state", state);
+			formData.append("city", City);
+			formData.append("state", State);
 			formData.append("address", address);
 			if (backendImage) {
 				formData.append("image", backendImage);
@@ -50,7 +50,7 @@ const CreateEditShop = () => {
 	};
 	useEffect(() => {
 		setName(myShopData?.name || "");
-		setFrontendImage(myShopData?.frontendImage || null);
+		setFrontendImage(myShopData?.image || null);
 		setState(myShopData?.state || state || "");
 		setCity(myShopData?.city || city || "");
 		setAddress(myShopData?.address || currentAddress || "");
@@ -144,7 +144,10 @@ const CreateEditShop = () => {
 							onChange={(e) => setAddress(e.target.value)}
 						/>
 					</div>
-					<button className="w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer" type="submit">
+					<button
+						className="w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer"
+						type="submit"
+					>
 						Save
 					</button>
 				</form>

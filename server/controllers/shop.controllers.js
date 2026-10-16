@@ -57,7 +57,11 @@ export const getCurrentShop = async (req, res) => {
 			.populate("owner")
 			.populate("item");
 		if (!shop) {
-			return null;
+			return res.status(200).json({
+                success: true,
+                message: "No shop found",
+                data: null,
+            });
 		}
 		return res.status(200).json({
 			success: true,
