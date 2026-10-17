@@ -9,35 +9,32 @@ export const createEditShop = async (req, res) => {
 				.status(400)
 				.json({ success: false, message: "All fields are required" });
 		}
-		let image = "";
+		const updateData = {
+			name,
+			owner: req.userId,
+			city,
+			state,
+			address,
+		};
 		if (req.file) {
-			image = await uploadOnCloudinary(req.file.path);
+			updateData.image = await uploadOnCloudinary(req.file.path);
 		}
 		let shop = await Shop.findOne({ owner: req.userId });
 		if (!shop) {
-			shop = await Shop.create({
-				name,
-				image,
-				owner: req.userId,
-				city,
-				state,
-				address,
-			});
+			if (!updateData.image) {
+				return res.status(400).json({
+					success: false,
+					message: "Shop image is required",
+				});
+			}
+			shop = await Shop.create(updateData);
 		} else {
-			shop = await Shop.findByIdAndUpdate(
-				shop._id,
-				{
-					name,
-					image,
-					owner: req.userId,
-					city,
-					state,
-					address,
-				},
-				{ new: true },
-			);
+			shop = await Shop.findByIdAndUpdate(shop._id, updateData, {
+				new: true,
+				runValidators: true,
+			});
 		}
-		await shop.populate("owner").populate("item");
+		await shop.populate(["owner", "item"]);
 		return res.status(201).json({
 			success: true,
 			message: "Shop created/Updated successully",
@@ -55,13 +52,16 @@ export const getCurrentShop = async (req, res) => {
 	try {
 		const shop = await Shop.findOne({ owner: req.userId })
 			.populate("owner")
-			.populate("item");
+			.populate({
+				path: "item",
+				options: { sort: { updatedAt: -1 } },
+			});
 		if (!shop) {
 			return res.status(200).json({
-                success: true,
-                message: "No shop found",
-                data: null,
-            });
+				success: true,
+				message: "No shop found",
+				data: null,
+			});
 		}
 		return res.status(200).json({
 			success: true,

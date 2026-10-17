@@ -1,9 +1,23 @@
 import React from 'react'
 import {FaPen,FaTrashAlt} from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import { serverURl } from '../App'
+import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import { setMyShopData } from '../redux/owner.slice'
 
 const OwnerItemCard = ({data}) => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const handleDelete = async()=>{
+        console.log("click")
+        try {
+            const result = await axios.get(`${serverURl}/api/item/delete/${data._id}`,{withCredentials:true})
+            dispatch(setMyShopData(result.data.data))
+        } catch (error) {
+            console.log(error)
+        }
+    }
   return (
     <div className='flex bg-white rounded-lg shadow-md overflow-hidden border border-[#ff4d2d] w-full max-w-2xl'>
         <div className='w-36 shrink-0 bg-[#ff4d2d]'>
@@ -21,7 +35,7 @@ const OwnerItemCard = ({data}) => {
                     <div className='p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer' onClick={()=> navigate(`/edit-item/${data._id}`)}>
                         <FaPen size={16}/>
                     </div>
-                    <div className='p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer'>
+                    <div className='p-2 rounded-full hover:bg-[#ff4d2d]/10 text-[#ff4d2d] cursor-pointer' onClick={handleDelete}>
                         <FaTrashAlt size={16}/>
                     </div>
                 </div>

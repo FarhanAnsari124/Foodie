@@ -28,7 +28,10 @@ export const addItem = async (req, res) => {
 		await item.populate("shop");
 		shop.item.push(item._id);
 		await shop.save();
-		await shop.populate("item");
+		await shop.populate({
+			path: "item",
+			options: { sort: { updatedAt: -1 } },
+		});
 
 		return res.status(201).json({
 			success: true,
@@ -47,27 +50,29 @@ export const editItem = async (req, res) => {
 	try {
 		const itemId = req.params.itemId;
 		const { name, category, foodType, price } = req.body;
-		const updateData ={
+		const updateData = {
 			name,
 			category,
 			foodType,
 			price,
-		}
+		};
 		if (req.file) {
 			updateData.image = await uploadOnCloudinary(req.file.path);
 		}
-		const item = await Item.findByIdAndUpdate(
-			itemId,
-			updateData,
-			{ new: true },
-		);
+		const item = await Item.findByIdAndUpdate(itemId, updateData, {
+			new: true,
+			runValidators: true,
+		});
 		if (!item) {
 			res.status(400).json({
 				success: false,
 				message: "Item not found with current item Id",
 			});
 		}
-		const shop = await Shop.findOne({owner:req.userId}).populate("item")
+		const shop = await Shop.findOne({ owner: req.userId }).populate({
+			path: "item",
+			options: { sort: { updatedAt: -1 } },
+		});
 		return res.status(200).json({
 			success: true,
 			message: "Item Updated successfully",
@@ -80,11 +85,11 @@ export const editItem = async (req, res) => {
 		});
 	}
 };
-export const getItemById = async (req,res)=> {
+export const getItemById = async (req, res) => {
 	try {
-		const itemId = req.params.itemId
-		const item = await Item.findById(itemId)
-		if(!item){
+		const itemId = req.params.itemId;
+		const item = await Item.findById(itemId);
+		if (!item) {
 			res.status(400).json({
 				success: false,
 				message: "Item not found with current item Id",
@@ -95,11 +100,39 @@ export const getItemById = async (req,res)=> {
 			message: "Item Fetched successfully",
 			data: item,
 		});
-
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
 			message: error.message,
 		});
 	}
-}
+};
+export const deleteItem = async (req, res) => {
+	try {
+		const itemId = req.params.itemId;
+		const item = await Item.findByIdAndDelete(itemId)
+		if(!item){
+			res.status(400).json({
+				success: false,
+				message: "Item not found with current item Id",
+			});
+		}
+		const shop = await Shop.findOne({owner:req.userId})
+		shop.item = shop.item.filter(i=> i._id !== item._id)
+		await shop.save()
+		await shop.populate({
+			path:"item",
+			options:{sort:{updatedAt:-1}}
+		})
+		return res.status(200).json({
+			success: true,
+			message: "Item Deleted successfully",
+			data: shop,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
