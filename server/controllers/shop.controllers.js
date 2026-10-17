@@ -57,7 +57,7 @@ export const getCurrentShop = async (req, res) => {
 				options: { sort: { updatedAt: -1 } },
 			});
 		if (!shop) {
-			return res.status(200).json({
+			return res.status(400).json({
 				success: true,
 				message: "No shop found",
 				data: null,
@@ -75,3 +75,29 @@ export const getCurrentShop = async (req, res) => {
 		});
 	}
 };
+
+export const getShopByCity = async (req,res) => {
+	try {
+		const {city} = req.params
+		const shops = await Shop.find({
+			city:{$regex:new RegExp(`^${city}$`, "i")}
+		}).populate("item")
+		if(!shops){
+			return res.status(400).json({
+				success: true,
+				message: "No shop found",
+				data: null,
+			});
+		}
+		return res.status(200).json({
+			success: true,
+			message: "Shops fetched successfully",
+			data: shops,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+}

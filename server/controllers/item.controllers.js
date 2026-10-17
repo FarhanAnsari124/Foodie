@@ -110,24 +110,57 @@ export const getItemById = async (req, res) => {
 export const deleteItem = async (req, res) => {
 	try {
 		const itemId = req.params.itemId;
-		const item = await Item.findByIdAndDelete(itemId)
-		if(!item){
+		const item = await Item.findByIdAndDelete(itemId);
+		if (!item) {
 			res.status(400).json({
 				success: false,
 				message: "Item not found with current item Id",
 			});
 		}
-		const shop = await Shop.findOne({owner:req.userId})
-		shop.item = shop.item.filter(i=> i._id !== item._id)
-		await shop.save()
+		const shop = await Shop.findOne({ owner: req.userId });
+		shop.item = shop.item.filter((i) => i._id !== item._id);
+		await shop.save();
 		await shop.populate({
-			path:"item",
-			options:{sort:{updatedAt:-1}}
-		})
+			path: "item",
+			options: { sort: { updatedAt: -1 } },
+		});
 		return res.status(200).json({
 			success: true,
 			message: "Item Deleted successfully",
 			data: shop,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+export const getItemByCity = async (req, res) => {
+	try {
+		const { city } = req.params;
+		if (!city) {
+			res.status(400).json({
+				success: false,
+				message: "City is required",
+			});
+		}
+		const shops = await Shop.find({
+			city: { $regex: new RegExp(`^${city}$`, "i") },
+		}).populate("item");
+		if (!shops) {
+			return res.status(400).json({
+				success: true,
+				message: "No shop found",
+				data: null,
+			});
+		}
+		const shopIds = shops.map((shop) => shop._id);
+		const items = await Item.find({ shop: { $in: shopIds } });
+		return res.status(200).json({
+			success: true,
+			message: "Items fetched successfully",
+			data: items,
 		});
 	} catch (error) {
 		return res.status(500).json({
