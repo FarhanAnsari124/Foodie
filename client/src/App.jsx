@@ -10,6 +10,7 @@ import useGetCity from './hooks/useGetCity'
 import CreateEditShop from './pages/CreateEditShop'
 import AddItem from './pages/AddItem'
 import EditItem from './pages/EditItem'
+import CartPage from './pages/CartPage'
 export const serverURl = "http://localhost:8000"
 
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
       <Route path='/create-edit-shop' element={userData?<CreateEditShop/>:<Navigate to={'/signin'}/>}/>
       <Route path='/add-item' element={userData?<AddItem/>:<Navigate to={'/signin'}/>}/>
       <Route path='/edit-item/:itemId' element={userData?<EditItem/>:<Navigate to={'/signin'}/>}/>
+      <Route path='/cart' element={userData?<CartPage/>:<Navigate to={'/signin'}/>}/>
     </Routes>
   )
 }

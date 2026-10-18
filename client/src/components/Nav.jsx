@@ -11,7 +11,7 @@ import { serverURl } from "../App";
 import { setUserData } from "../redux/user.slice";
 import { useNavigate } from "react-router-dom";
 const Nav = () => {
-	const { userData } = useSelector((state) => state.user);
+	const { userData ,cartItems} = useSelector((state) => state.user);
 	const { myShopData } = useSelector((state) => state.owner);
 	const [showPopUp, setShowPopUp] = useState(false);
 	const [showSearch, setShowSearch] = useState(false);
@@ -119,13 +119,13 @@ const Nav = () => {
 					</div>
 				) : (
 					<>
-						<div className="relative cursor-pointer">
+						<div className="relative cursor-pointer" onClick={()=> navigate('/cart')}>
 							<FiShoppingCart
 								size={25}
 								className="text-[#ff4d2d]"
 							/>
 							<span className="absolute -right-2.5 -top-3 text-[#ff4d2d]">
-								0
+								{cartItems.length}
 							</span>
 						</div>
 
