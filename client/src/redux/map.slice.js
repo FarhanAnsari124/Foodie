@@ -5,8 +5,8 @@ const mapSlice = createSlice({
 	name: "map",
 	initialState: {
 		location: {
-			lat: null,
-			lon: null,
+			lat:  26.4499,
+            lon: 80.3319
 		},
         address:null
 	},
