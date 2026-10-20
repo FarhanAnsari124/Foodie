@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { setAddress, setLocation } from "../redux/map.slice";
 import axios from "axios";
+import { serverURl } from "../App";
 
 function ReCenterMap({ location }) {
 	if (location.lat != null && location.lon != null) {
@@ -68,6 +69,28 @@ const CheckOut = () => {
 		} catch (error) {
 			console.log(error);
 		}
+	};
+
+	const handlePlaceOrder = async () => {
+		try {
+			const { data } = await axios.post(
+				`${serverURl}/api/order/place-order`,
+				{
+					cartItems,
+					paymentMethod,
+					deliveryAddress: {
+						text: addressInput,
+						latitude: location.lat,
+						longitude: location.lon,
+					},
+					totalAmount:amountWithDeliveryFee,
+				},
+				{ withCredentials: true },
+			);
+            console.log(data)
+		} catch (error) {
+            console.log(error)
+        }
 	};
 	useEffect(() => {
 		setAddressInput(address ?? "");
@@ -139,7 +162,6 @@ const CheckOut = () => {
 						<div
 							className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "cod" ? "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border-gray-300"}`}
 							onClick={() => setPaymentMethod("cod")}
-
 						>
 							<span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
 								<MdDeliveryDining className="text-green-600 text-xl" />
@@ -208,7 +230,11 @@ const CheckOut = () => {
 						</div>
 					</div>
 				</section>
-                <button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer">{paymentMethod=="cod"?"Place Order":"Pay & Place Order"}</button> 
+				<button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer" onClick={handlePlaceOrder}>
+					{paymentMethod == "cod"
+						? "Place Order"
+						: "Pay & Place Order"}
+				</button>
 			</div>
 		</div>
 	);
