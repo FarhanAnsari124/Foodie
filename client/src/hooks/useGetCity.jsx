@@ -17,7 +17,6 @@ const useGetCity = () => {
         dispatch(setCity(data?.results[0]?.city))
         dispatch(setState(data?.results[0]?.state))
         dispatch(setCurrentAddress(`${data?.results[0]?.address_line1} ${data?.results[0]?.address_line2}`))
-        console.log(data?.results[0])
         dispatch(setAddress(data?.results[0]?.formatted));
     });
   }, [userData]); 

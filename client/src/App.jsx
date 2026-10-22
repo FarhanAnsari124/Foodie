@@ -12,11 +12,15 @@ import AddItem from './pages/AddItem'
 import EditItem from './pages/EditItem'
 import CartPage from './pages/CartPage'
 import CheckOut from './pages/CheckOut'
+import OrderPlaced from './pages/OrderPlaced'
+import MyOrders from './pages/MyOrders'
+import useGetMyOrders from './hooks/useGetMyOrders'
 export const serverURl = "http://localhost:8000"
 
 const App = () => {
   const {loading}= useGetCurrentUser()
   useGetCity()
+  useGetMyOrders()
   const {userData} = useSelector(state=>state.user)
   if(loading){
     return <div className='min-h-screen flex justify-center items-center text-5xl text-[#ff4d2d]'>Loading...</div>
@@ -32,6 +36,8 @@ const App = () => {
       <Route path='/edit-item/:itemId' element={userData?<EditItem/>:<Navigate to={'/signin'}/>}/>
       <Route path='/cart' element={userData?<CartPage/>:<Navigate to={'/signin'}/>}/>
       <Route path='/check-out' element={userData?<CheckOut/>:<Navigate to={'/signin'}/>}/>
+      <Route path='/order-placed' element={userData?<OrderPlaced/>:<Navigate to={'/signin'}/>}/>
+      <Route path='/my-orders' element={userData?<MyOrders/>:<Navigate to={'/signin'}/>}/>
     </Routes>
   )
 }

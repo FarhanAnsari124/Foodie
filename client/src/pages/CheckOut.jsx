@@ -88,6 +88,7 @@ const CheckOut = () => {
 				{ withCredentials: true },
 			);
             console.log(data)
+            navigate("/order-placed")
 		} catch (error) {
             console.log(error)
         }

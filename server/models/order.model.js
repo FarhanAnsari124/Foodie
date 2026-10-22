@@ -8,7 +8,7 @@ const shopOrderItemSchema = new mongoose.Schema(
 		},
         name:String,
 		price: Number,
-		quanity: Number,
+		quantity: Number,
 	},
 	{
 		timestamps: true,

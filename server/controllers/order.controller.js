@@ -1,5 +1,6 @@
 import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
+import User from "../models/user.model.js";
 export const placeOrder = async (req, res) => {
 	try {
 		const { cartItems, paymentMethod, deliveryAddress, totalAmount } =
@@ -12,8 +13,8 @@ export const placeOrder = async (req, res) => {
 		}
 		if (
 			!deliveryAddress?.text ||
-			deliveryAddress.latitude==null ||
-			deliveryAddress.longitude==null
+			deliveryAddress.latitude == null ||
+			deliveryAddress.longitude == null
 		) {
 			return res.status(400).json({
 				success: false,
@@ -34,16 +35,15 @@ export const placeOrder = async (req, res) => {
 				if (!shop) {
 					throw new Error("Shop Not Found");
 				}
-                if (!shop.owner) {
-                    throw new Error("Shop Owner Not Found");
-                }
+				if (!shop.owner) {
+					throw new Error("Shop Owner Not Found");
+				}
 				const items = groupItemsByShop[shopId];
 				const subTotal = items.reduce(
-                    (sum, item) =>
-                        sum +
-                        Number(item.price) * Number(item.quantity),
-                    0
-                );
+					(sum, item) =>
+						sum + Number(item.price) * Number(item.quantity),
+					0,
+				);
 				return {
 					shop: shop._id,
 					owner: shop.owner._id,
@@ -58,15 +58,13 @@ export const placeOrder = async (req, res) => {
 			}),
 		);
 
-		const newOrder = await Order.create(
-			{
-				user: req.userId,
-				paymentMethod,
-				deliveryAddress,
-				totalAmount,
-				shopOrders,
-			}
-		);
+		const newOrder = await Order.create({
+			user: req.userId,
+			paymentMethod,
+			deliveryAddress,
+			totalAmount,
+			shopOrders,
+		});
 		return res.status(201).json({
 			success: true,
 			message: "Order Created Successfully",
@@ -79,3 +77,48 @@ export const placeOrder = async (req, res) => {
 		});
 	}
 };
+
+export const getMyOrders = async (req, res) => {
+	try {
+		const user = await User.findById(req.userId);
+		if (!user) {
+			return res.status(404).json({
+				success: false,
+				message: "User Not Found",
+			});
+		}
+		let orders;
+		if (user.role == "User") {
+			orders = await Order.find({ user: req.userId })
+				.sort({ createdAt: -1 })
+				.populate("shopOrders.shop", "name")
+				.populate("shopOrders.owner", "name email mobile")
+				.populate("shopOrders.shopOrderItems.item", "name image price");
+		} else if (user.role == "Owner") {
+			orders = await Order.find({
+				"shopOrders.owner": req.userId,
+			})
+				.sort({ createdAt: -1 })
+				.populate("shopOrders.shop", "name")
+				.populate("user")
+				.populate("shopOrders.shopOrderItems.item", "name image price");
+		} else {
+			return res.status(403).json({
+				success: false,
+				message: "Unauthorized Role",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "Orders fetched successfully",
+			data: orders,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+

@@ -12,7 +12,6 @@ const useGetShopByCity = () => {
         try {
             const result = await axios.get(`${serverURl}/api/shop/get-by-city/${city}`,{withCredentials:true})
             dispatch(setShopsInMyCity(result.data.data))
-            console.log(result.data.data)
         } catch (error) {
             console.log(error)
             dispatch(setUserData(null))

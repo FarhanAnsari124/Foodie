@@ -10,7 +10,6 @@ const OwnerItemCard = ({data}) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const handleDelete = async()=>{
-        console.log("click")
         try {
             const result = await axios.get(`${serverURl}/api/item/delete/${data._id}`,{withCredentials:true})
             dispatch(setMyShopData(result.data.data))
