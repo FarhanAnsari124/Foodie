@@ -11,7 +11,7 @@ import { serverURl } from "../App";
 import { setUserData } from "../redux/user.slice";
 import { useNavigate } from "react-router-dom";
 const Nav = () => {
-	const { userData ,cartItems} = useSelector((state) => state.user);
+	const { userData, cartItems } = useSelector((state) => state.user);
 	const { myShopData } = useSelector((state) => state.owner);
 	const [showPopUp, setShowPopUp] = useState(false);
 	const [showSearch, setShowSearch] = useState(false);
@@ -103,14 +103,20 @@ const Nav = () => {
 								</button>
 							</>
 						)}
-						<div className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
+						<div
+							className="hidden md:flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium"
+							onClick={() => navigate("/my-orders")}
+						>
 							<TbReceipt2 size={20} />
 							<span>My Orders</span>
 							<span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">
 								0
 							</span>
 						</div>
-						<div className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium">
+						<div
+							className="md:hidden flex items-center gap-2 cursor-pointer relative px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] font-medium"
+							onClick={() => navigate("/my-orders")}
+						>
 							<TbReceipt2 size={20} />
 							<span className="absolute -right-2 -top-2 text-xs font-bold text-white bg-[#ff4d2d] rounded-full px-[6px] py-[1px]">
 								0
@@ -119,7 +125,10 @@ const Nav = () => {
 					</div>
 				) : (
 					<>
-						<div className="relative cursor-pointer" onClick={()=> navigate('/cart')}>
+						<div
+							className="relative cursor-pointer"
+							onClick={() => navigate("/cart")}
+						>
 							<FiShoppingCart
 								size={25}
 								className="text-[#ff4d2d]"
@@ -129,7 +138,10 @@ const Nav = () => {
 							</span>
 						</div>
 
-						<button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff422d] text-sm font-medium cursor-pointer">
+						<button
+							className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff422d] text-sm font-medium cursor-pointer"
+							onClick={() => navigate("/my-orders")}
+						>
 							My Orders
 						</button>
 					</>
@@ -147,7 +159,10 @@ const Nav = () => {
 							{userData?.fullName}
 						</div>
 						{userData?.role == "User" && (
-							<div className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer">
+							<div
+								className="md:hidden text-[#ff4d2d] font-semibold cursor-pointer"
+								onClick={() => navigate("/my-orders")}
+							>
 								My Orders
 							</div>
 						)}

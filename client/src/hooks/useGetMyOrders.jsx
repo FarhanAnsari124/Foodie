@@ -10,10 +10,6 @@ const useGetMyOrders = () => {
     const fetchOrders = async () =>{
         try {
             const {data} = await axios.get(`${serverURl}/api/order/my-orders`,{withCredentials:true})
-            console.log(
-					"First order item:",
-					data.data?.[0]?.shopOrders?.[0]?.shopOrderItems?.[0],
-				);
             dispatch(setMyOrders(data.data))
             console.log(data.data)
         } catch (error) {
