@@ -15,12 +15,14 @@ import CheckOut from './pages/CheckOut'
 import OrderPlaced from './pages/OrderPlaced'
 import MyOrders from './pages/MyOrders'
 import useGetMyOrders from './hooks/useGetMyOrders'
+import useUpdateLocation from './hooks/useUpdateLocation'
 export const serverURl = "http://localhost:8000"
 
 const App = () => {
   const {loading}= useGetCurrentUser()
   useGetCity()
   useGetMyOrders()
+  useUpdateLocation()
   const {userData} = useSelector(state=>state.user)
   if(loading){
     return <div className='min-h-screen flex justify-center items-center text-5xl text-[#ff4d2d]'>Loading...</div>
