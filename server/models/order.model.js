@@ -9,10 +9,7 @@ const shopOrderItemSchema = new mongoose.Schema(
         name:String,
 		price: Number,
 		quantity: Number,
-	},
-	{
-		timestamps: true,
-	},
+	}
 );
 const shopOrderSchema = new mongoose.Schema(
 	{
@@ -34,9 +31,7 @@ const shopOrderSchema = new mongoose.Schema(
 			default:"Pending"
 		}
 	},
-	{
-		timestamps: true,
-	},
+
 );
 const orderSchema = new mongoose.Schema(
 	{

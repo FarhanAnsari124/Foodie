@@ -12,6 +12,7 @@ import "leaflet/dist/leaflet.css";
 import { setAddress, setLocation } from "../redux/map.slice";
 import axios from "axios";
 import { serverURl } from "../App";
+import { addMyOrder } from "../redux/user.slice";
 
 function ReCenterMap({ location }) {
 	if (location.lat != null && location.lon != null) {
@@ -83,15 +84,15 @@ const CheckOut = () => {
 						latitude: location.lat,
 						longitude: location.lon,
 					},
-					totalAmount:amountWithDeliveryFee,
+					totalAmount: amountWithDeliveryFee,
 				},
 				{ withCredentials: true },
 			);
-            console.log(data)
-            navigate("/order-placed")
+			dispatch(addMyOrder(data.data));
+			navigate("/order-placed");
 		} catch (error) {
-            console.log(error)
-        }
+			console.log(error);
+		}
 	};
 	useEffect(() => {
 		setAddressInput(address ?? "");
@@ -231,7 +232,10 @@ const CheckOut = () => {
 						</div>
 					</div>
 				</section>
-				<button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer" onClick={handlePlaceOrder}>
+				<button
+					className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold cursor-pointer"
+					onClick={handlePlaceOrder}
+				>
 					{paymentMethod == "cod"
 						? "Place Order"
 						: "Pay & Place Order"}
