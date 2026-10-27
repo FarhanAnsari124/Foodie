@@ -157,7 +157,7 @@ export const updateOrderStatus = async (req, res) => {
 		}
 		shopOrder.status = status;
 		let deliveryBoysPayload = [];
-		if (status == "Out for delivery" || !shopOrder.assignment == null) {
+		if (status == "Out for delivery" && !shopOrder.assignment) {
 			const { longitude, latitude } = order.deliveryAddress;
 			const nearByDeliveryBoys = await User.find({
 				role: "Delivery Boy",
@@ -196,7 +196,7 @@ export const updateOrderStatus = async (req, res) => {
 				status: "Broadcasted",
 			});
 
-			shopOrder.assignedDeliveryBoy=deliveryAssignment.assignedTo
+			shopOrder.assignedDeliveryBoy = deliveryAssignment.assignedTo;
 			shopOrder.assignment = deliveryAssignment._id;
 			deliveryBoysPayload = availableDeliveryBoys.map((b) => ({
 				id: b._id,
@@ -207,16 +207,52 @@ export const updateOrderStatus = async (req, res) => {
 			}));
 		}
 		await order.save();
-		const updatedShopOrder = order.shopOrders.find(o=> o.shop==shopId)
-		await order.populate("shopOrders.shop" ,"name")
-		await order.populate("shopOrders.assignedDeliveryBoy" ,"fullName email mobile")
+		const updatedShopOrder = order.shopOrders.find((o) => o.shop == shopId);
+		await order.populate("shopOrders.shop", "name");
+		await order.populate(
+			"shopOrders.assignedDeliveryBoy",
+			"fullName email mobile",
+		);
 
-		
 		return res.status(200).json({
-			shopOrder:updatedShopOrder,
-			assignedDeliveryBoy:updatedShopOrder?.assignedDeliveryBoy,
-			availableDeliveryBoys:deliveryBoysPayload,
-			assignment:updatedShopOrder?.assignment._id,
+			shopOrder: updatedShopOrder,
+			assignedDeliveryBoy: updatedShopOrder?.assignedDeliveryBoy,
+			availableDeliveryBoys: deliveryBoysPayload,
+			assignment: updatedShopOrder?.assignment?._id ?? null,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+export const getDeliveryBoyAssignment = async (req, res) => {
+	try {
+		const deliveryBoyId = req.userId;
+		const assignments = await DeliveryAssignment.find({
+			broadcastedTo: deliveryBoyId,
+			status: "Broadcasted",
+		})
+			.populate("order")
+			.populate("shop");
+		const formattedData = assignments.map((a) => ({
+			assignmentId:a._id,
+			orderId: a.order._id,
+			shopName: a.shop.name,
+			deliveryAddress: a.order.deliveryAddress,
+			items:
+				a.order.shopOrders.find((so) => so._id.equals(a.shopOrderId))
+					.shopOrderItems || [],
+			subTotal: a.order.shopOrders.find((so) => so._id.equals(a.shopOrderId))
+				.subTotal,
+		}));
+
+		return res.status(200).json({
+			success: true,
+			message: "Delivery Assignments fetched successfully",
+			data: formattedData,
 		});
 	} catch (error) {
 		return res.status(500).json({

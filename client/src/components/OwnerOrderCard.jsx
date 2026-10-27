@@ -6,18 +6,22 @@ import { useDispatch } from "react-redux";
 import { updateOrderStatus } from "../redux/user.slice";
 
 const OwnerOrderCard = ({ data }) => {
-	const dispatch = useDispatch()
-	const [availableBoys,setAvailableBoys] = useState([])
-	const handleUpdateStatus = async (orderId,shopId,status)=>{
+	const dispatch = useDispatch();
+	const [availableBoys, setAvailableBoys] = useState([]);
+	const handleUpdateStatus = async (orderId, shopId, status) => {
 		try {
-			const {data} = await axios.post(`${serverURl}/api/order/update-status/${orderId}/${shopId}`,{status},{withCredentials:true})
-			dispatch(updateOrderStatus({orderId,shopId,status}))
-			setAvailableBoys(data.availableDeliveryBoys)
-			console.log(data)
+			const { data } = await axios.post(
+				`${serverURl}/api/order/update-status/${orderId}/${shopId}`,
+				{ status },
+				{ withCredentials: true },
+			);
+			dispatch(updateOrderStatus({ orderId, shopId, status }));
+			setAvailableBoys(data.availableDeliveryBoys ?? []);
+			console.log(data);
 		} catch (error) {
-			console.log(error)
+			console.log(error);
 		}
-	}
+	};
 	return (
 		<div className="bg-white rounded-lg shadow p-4 space-y-4">
 			<div>
@@ -65,9 +69,17 @@ const OwnerOrderCard = ({ data }) => {
 					</span>
 				</span>
 				<select
-					
 					className="rounded-md border px-3 py-1 text-sm focus:outline-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]"
-					onChange={(e)=>handleUpdateStatus(data._id,data.shopOrders.shop._id,e.target.value)}
+					onChange={(e) => {
+						const shopId = data.shopOrders.shop?._id;
+
+						if (!shopId) {
+							console.error("Shop ID is missing");
+							return;
+						}
+
+						handleUpdateStatus(data._id, shopId, e.target.value);
+					}}
 				>
 					<option value="">Change</option>
 					<option value="Pending">Pending</option>
@@ -75,17 +87,20 @@ const OwnerOrderCard = ({ data }) => {
 					<option value="Out for delivery">Out for delivery</option>
 				</select>
 			</div>
-			{data.shopOrders.status=="Out for delivery" && <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
-				<p>Available Delivery Boys: </p>
-				{availableBoys.length>0?(
-					availableBoys.map((b,index)=>(
-						<div className="text-gray-500" key={index}>{b.fullName}-{b.mobile}</div>
-					))
-				):(<div>
-					Waiting for delivery to accept
-				</div>)}
-
-			</div>}
+			{data.shopOrders.status == "Out for delivery" && (
+				<div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
+					<p>Available Delivery Boys: </p>
+					{availableBoys.length > 0 ? (
+						availableBoys.map((b, index) => (
+							<div className="text-gray-500" key={index}>
+								{b.fullName}-{b.mobile}
+							</div>
+						))
+					) : (
+						<div>Waiting for delivery to accept</div>
+					)}
+				</div>
+			)}
 			<div className="text-right font-bold text-gray-800 text-sm">
 				Total: ₹{data.shopOrders.subTotal}
 			</div>

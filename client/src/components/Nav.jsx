@@ -125,18 +125,20 @@ const Nav = () => {
 					</div>
 				) : (
 					<>
-						<div
-							className="relative cursor-pointer"
-							onClick={() => navigate("/cart")}
-						>
-							<FiShoppingCart
-								size={25}
-								className="text-[#ff4d2d]"
-							/>
-							<span className="absolute -right-2.5 -top-3 text-[#ff4d2d]">
-								{cartItems.length}
-							</span>
-						</div>
+						{userData.role == "User" && (
+							<div
+								className="relative cursor-pointer"
+								onClick={() => navigate("/cart")}
+							>
+								<FiShoppingCart
+									size={25}
+									className="text-[#ff4d2d]"
+								/>
+								<span className="absolute -right-2.5 -top-3 text-[#ff4d2d]">
+									{cartItems.length}
+								</span>
+							</div>
+						)}
 
 						<button
 							className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff422d] text-sm font-medium cursor-pointer"
@@ -154,7 +156,8 @@ const Nav = () => {
 					{userData?.fullName?.slice(0, 1) || "U"}
 				</div>
 				{showPopUp && (
-					<div className="fixed top-20 right-2.5 md:right-[10%] lg:right-[25%] w-45 bg-white shadow-2xl rounded-xl p-5 flex flex-col gap-2.5 z-9999">
+					<div className={`fixed top-20 right-2.5
+					${userData.role=="Delivery Boy"?"md:right-[20%] lg:right-[40%]":"md:right-[10%] lg:right-[25%]"} md:right-[10%] lg:right-[25%] w-45 bg-white shadow-2xl rounded-xl p-5 flex flex-col gap-2.5 z-9999`}>
 						<div className="text-[17px] font-semibold">
 							{userData?.fullName}
 						</div>
