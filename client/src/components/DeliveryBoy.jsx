@@ -30,12 +30,27 @@ const DeliveryBoy = () => {
 				},
 			);
 			console.log(data.data);
+      await getCurrentOrder()
+		} catch (error) {
+			console.log(error);
+		}
+  }
+  const getCurrentOrder = async()=>{
+    try {
+      const { data } = await axios.get(
+				`${serverURl}/api/order/get-current-order`,
+				{
+					withCredentials: true,
+				},
+			);
+			console.log(data.data);
 		} catch (error) {
 			console.log(error);
 		}
   }
 	useEffect(() => {
-		getAssignment();
+		getAssignment()
+    getCurrentOrder()
 	}, [userData]);
 	return (
 		<div className="w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-auto">
