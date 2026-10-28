@@ -21,6 +21,19 @@ const DeliveryBoy = () => {
 			console.log(error);
 		}
 	};
+  const acceptOrder = async(assignmentId)=>{
+    try {
+      const { data } = await axios.get(
+				`${serverURl}/api/order/accept-order/${assignmentId}`,
+				{
+					withCredentials: true,
+				},
+			);
+			console.log(data.data);
+		} catch (error) {
+			console.log(error);
+		}
+  }
 	useEffect(() => {
 		getAssignment();
 	}, [userData]);
@@ -66,7 +79,7 @@ const DeliveryBoy = () => {
 											{a.subTotal}
 										</p>
 									</div>
-                  <button className="bg-orange-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-orange-600 cursor-pointer">Accept</button>
+                  <button className="bg-orange-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-orange-600 cursor-pointer" onClick={()=> acceptOrder(a.assignmentId)}>Accept</button>
 								</div>
 							))
 						) : (
