@@ -2,6 +2,7 @@ import DeliveryAssignment from "../models/deliveryAssignment.model.js";
 import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
+import { sendDeliveryOtpMail } from "../utils/mail.js";
 export const placeOrder = async (req, res) => {
 	try {
 		const { cartItems, paymentMethod, deliveryAddress, totalAmount } =
@@ -453,6 +454,34 @@ export const getOrderById = async (req, res) => {
 			success: true,
 			message: "Order fetched successfully",
 			data: order,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+export const sendDeliveryOtp = async (req, res) => {
+	try {
+		const { orderId, shopOrderId } = req.body;
+		const order = await Order.findById(orderId).populate("user");
+		const shopOrder = order.shopOrders.id(shopOrderId);
+		if (!order || !shopOrder) {
+			return res.status(400).json({
+				success: false,
+				message: "Valid Order/ShopOrder not found",
+			});
+		}
+		const otp = Math.floor(1000 + Math.random() * 9000).toString();
+		shopOrder.deliveryOtp = otp;
+		shopOrder.otpExpires = Date.now() + 5 * 60 * 1000;
+		await order.save();
+		await sendDeliveryOtpMail(order.user, otp);
+		return res.status(200).json({
+			success: true,
+			message: `OTP for delivery sent successfully to ${order.user.fullName}`,
 		});
 	} catch (error) {
 		return res.status(500).json({
