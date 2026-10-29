@@ -85,7 +85,7 @@ const TrackOrderPage = () => {
 							Delivered
 						</p>
 					)}
-					{shopOrder.assignedDeliveryBoy && (
+					{shopOrder.assignedDeliveryBoy && shopOrder.status!="Delivered" && (
 						<div className="h-[400px] w-full rounded-2xl overflow-hidden shadow-md">
 							<DeliveryBoyTracking
 								data={{

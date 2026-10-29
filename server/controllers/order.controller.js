@@ -490,3 +490,44 @@ export const sendDeliveryOtp = async (req, res) => {
 		});
 	}
 };
+
+export const verifyDeliveryOtp = async (req, res) => {
+	try {
+		const { orderId, shopOrderId, otp } = req.body;
+		const order = await Order.findById(orderId).populate("user");
+		const shopOrder = order.shopOrders.id(shopOrderId);
+		if (!order || !shopOrder) {
+			return res.status(400).json({
+				success: false,
+				message: "Valid Order/ShopOrder not found",
+			});
+		}
+		if (
+			shopOrder.deliveryOtp !== otp ||
+			!shopOrder.otpExpires ||
+			shopOrder.otpExpires < Date.now()
+		) {
+			return res.status(400).json({
+				success: false,
+				message: "Otp Invalid/Expired",
+			});
+		}
+		shopOrder.status = "Delivered";
+		shopOrder.deliveredAt = Date.now();
+		await order.save();
+		await DeliveryAssignment.deleteOne({
+			shopOrderId: shopOrder._id,
+			order: order._id,
+			assignedTo: shopOrder.assignedDeliveryBoy,
+		});
+		return res.status(200).json({
+			success:true,
+			message:"Order Delivered successfully!"
+		})
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};

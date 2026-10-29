@@ -47,6 +47,10 @@ const shopOrderSchema = new mongoose.Schema(
 			type:Date,
 			default:null
 		},
+		deliveredAt:{
+			type:Date,
+			default:null
+		}
 	},
 
 );
