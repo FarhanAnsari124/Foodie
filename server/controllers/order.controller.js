@@ -411,9 +411,48 @@ export const getCurrentOrder = async (req, res) => {
 			_id: assignment.order._id,
 			user: assignment.order.user,
 			shopOrder,
+			shopName: assignment.shop.name,
 			deliveryAddress: assignment.order.deliveryAddress,
 			deliveryBoyLocation,
 			customerLocation,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+export const getOrderById = async (req, res) => {
+	try {
+		const { orderId } = req.params;
+		const order = await Order.findById(orderId)
+			.populate("user")
+			.populate({
+				path: "shopOrders.shop",
+				model: "Shop",
+			})
+			.populate({
+				path: "shopOrders.assignedDeliveryBoy",
+				model: "User",
+			})
+			.populate({
+				path: "shopOrders.shopOrderItems.item",
+				model: "Item",
+			})
+			.lean();
+
+		if (!order) {
+			return res.status(404).json({
+				success: false,
+				message: "Order Not Found",
+			});
+		}
+		return res.status(200).json({
+			success: true,
+			message: "Order fetched successfully",
+			data: order,
 		});
 	} catch (error) {
 		return res.status(500).json({
