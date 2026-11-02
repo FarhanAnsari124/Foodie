@@ -169,3 +169,73 @@ export const getItemByCity = async (req, res) => {
 		});
 	}
 };
+export const getItemByShop = async (req, res) => {
+	try {
+		const { shopId } = req.params;
+
+		if (!shopId) {
+			return res.status(400).json({
+				success: false,
+				message: "Shop ID is required",
+			});
+		}
+
+		const shop = await Shop.findById(shopId).populate("item");
+
+		if (!shop) {
+			return res.status(404).json({
+				success: false,
+				message: "No Shop Found with this Id",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "Shop Items fetched successfully",
+			shop: shop,
+			items: shop.item,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
+
+export const searchItems = async (req, res) => {
+	try {
+		const { query, city } = req.query;
+		if (!query || !city) {
+			return null;
+		}
+		const shops = await Shop.find({
+			city: { $regex: new RegExp(`^${city}$`, "i") },
+		}).populate("item");
+		if (!shops) {
+			return res.status(400).json({
+				success: true,
+				message: "No shop found",
+				data: null,
+			});
+		}
+		const shopIds = shops.map((s) => s._id);
+		const items = await Item.find({
+			shop: { $in: shopIds },
+			$or: [
+				{ name: { $regex: query, $options: "i" } },
+				{ category: { $regex: query, $options: "i" } },
+			],
+		}).populate("shop", "name image");
+		return res.status(200).json({
+			success: true,
+			data: items,
+			message: "Searched Item fetched successfully",
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};

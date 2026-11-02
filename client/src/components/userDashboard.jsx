@@ -8,6 +8,9 @@ import { useDispatch, useSelector } from "react-redux";
 import useGetShopByCity from "../hooks/useGetShopByCity.jsx";
 import useGetItemsByCity from "../hooks/useGetItemsByCity.jsx";
 import FoodCard from "./FoodCard.jsx";
+import axios from "axios";
+import { serverURl } from "../App.jsx";
+import { useNavigate } from "react-router-dom";
 
 const userDashboard = () => {
 	const catScrollRef = useRef();
@@ -18,7 +21,22 @@ const userDashboard = () => {
 	const [showRightCatButton, setShowRightCatButton] = useState(false);
 	const [showLeftShopButton, setShowLeftShopButton] = useState(false);
 	const [showRightShopButton, setShowRightShopButton] = useState(false);
-	const { city,shopsInMyCity,itemsInMyCity } = useSelector((state) => state.user);
+	const navigate = useNavigate()
+	const [updatedItemsList,setUpdatedItemsList] = useState([])
+	const { city,shopsInMyCity,itemsInMyCity,searchItems } = useSelector((state) => state.user);
+
+	
+	const handleFilterByCategory = (category)=>{
+		if(category=="All"){
+			setUpdatedItemsList(itemsInMyCity)
+		}else{
+			const filteredList = itemsInMyCity?.filter((item)=> item.category === category)
+			setUpdatedItemsList(filteredList)
+		}
+	}
+	useEffect(()=>{
+		setUpdatedItemsList(itemsInMyCity)
+	},[itemsInMyCity])
 	const updateButton = (ref, setLeftButton, setRightButton) => {
 		const element = ref.current;
 		if (element) {
@@ -64,6 +82,14 @@ const userDashboard = () => {
 	return (
 		<div className="w-screen min-h-screen bg-[#fff9f6] flex flex-col items-center overflow-y-auto">
 			<Nav />
+			{searchItems && searchItems.length>0 && (
+				<div className="w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white shadow-md roudned-2xl mt-4">
+					<h1 className="text-gray-900 text-2xl sm:text-3xl font-semibold border-b border-gray-200 pb-2">Search Results</h1>
+					<div className="w-full h-auto flex flex-wrap gap-6 justify-center">{searchItems.map((item)=>(
+						<FoodCard data={item} key={item._id}/>
+					))}</div>
+				</div>
+			)}
 			<div className="w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]">
 				<h1 className="text-gray-800 text-2xl sm:text-3xl">
 					Inspiration for your first Order
@@ -83,7 +109,7 @@ const userDashboard = () => {
 						ref={catScrollRef}
 					>
 						{categories.map((cat, index) => (
-							<CategoryCard data={cat} key={index} />
+							<CategoryCard data={cat} key={index} onClick={()=>handleFilterByCategory(cat.category)}/>
 						))}
 					</div>
 					{showRightCatButton && (
@@ -114,8 +140,8 @@ const userDashboard = () => {
 						className="w-full flex overflow-x-auto gap-4 pb-2"
 						ref={shopScrollRef}
 					>
-						{shopsInMyCity?.map((cat, index) => (
-							<CategoryCard data={cat} key={index} />
+						{shopsInMyCity?.map((shop, index) => (
+							<CategoryCard data={shop} key={index}  onClick={()=> navigate(`/shop/${shop._id}`)}/>
 						))}
 					</div>
 					{showRightShopButton && (
@@ -133,7 +159,7 @@ const userDashboard = () => {
 					Suggested Food items
 				</h1>
 				<div className="w-full h-auto flex flex-wrap gap-[20px] justify-center">
-					{itemsInMyCity?.map((item,index)=>(
+					{updatedItemsList?.map((item,index)=>(
 						<FoodCard key={index} data={item}/>
 					))}
 
