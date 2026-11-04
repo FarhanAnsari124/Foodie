@@ -7,7 +7,7 @@ import DeliveryBoyTracking from "./DeliveryBoyTracking";
 
 const DeliveryBoy = () => {
 	const [availableAssignments, setAvailableAssignments] = useState([]);
-	const { userData } = useSelector((state) => state.user);
+	const { userData,socket } = useSelector((state) => state.user);
 	const [currentOrder, setCurrentOrder] = useState();
 	const [showOtpBox, setShowOtpBox] = useState(false);
 	const [otp, setOtp] = useState("");
@@ -25,6 +25,38 @@ const DeliveryBoy = () => {
 			console.log(error);
 		}
 	};
+	useEffect(()=>{
+		if(!socket || userData.role !=='Delivery Boy') return;
+		socket?.on('newAssignment',(data)=>{
+			if(data.sentTo==userData._id){
+				setAvailableAssignments([...availableAssignments,data])
+			}
+		})
+		let watchId;
+		if(navigator.geolocation){
+			watchId = navigator.geolocation.watchPosition((position)=>{
+				const latitude = position.coords.latitude
+				const longitude = position.coords.longitude
+				socket.emit('update-location',{
+					latitude,
+					longitude,
+					userId:userData._id
+				})
+			}),
+			(error)=>{
+				console.log(error)
+			},
+			{
+				enableHighAccuracy:true
+			}
+		}
+		return ()=>{
+			socket?.off('newAssignment')
+			if(watchId){
+				navigator.geolocation.clearWatch(watchId)
+			}
+		}
+	},[socket,userData])
 	const acceptOrder = async (assignmentId) => {
 		try {
 			const { data } = await axios.get(
