@@ -20,10 +20,13 @@ const UserOrderCard = ({ data }) => {
 						Date: {formatDate(data.createdAt)}
 					</p>
 				</div>
-				<div className="text-right">
-					<p className="text-sm text-gray-500">
+				<div className="text-right font-semibold">
+					{data.paymentMethod == "cod" ?<p className="text-sm text-gray-500">
 						{data.paymentMethod.toUpperCase()}
-					</p>
+					</p>:<p className="text-sm text-gray-500">
+						Payment: {data.payment?"True":"False"}
+					</p>}
+					
 					<p className="font-medium text-blue-600 italic">
 						{data?.shopOrders?.[0].status}
 					</p>

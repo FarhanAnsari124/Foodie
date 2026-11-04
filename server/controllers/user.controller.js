@@ -37,7 +37,7 @@ export const updateUserLocation = async(req,res)=>{
         type:'Point',
         coordinates:[lon,lat]
       }
-    },{new:true})
+    },{returnDocument: "after"})
     if (!user) {
       return res.status(400).json({
         success: false,

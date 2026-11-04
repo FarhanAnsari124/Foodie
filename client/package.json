@@ -23,6 +23,7 @@
     "react-router-dom": "^7.18.4",
     "react-spinners": "^0.17.1",
     "redux": "^5.0.1",
+    "socket.io-client": "^4.8.4",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

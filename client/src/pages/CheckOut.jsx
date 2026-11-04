@@ -88,11 +88,42 @@ const CheckOut = () => {
 				},
 				{ withCredentials: true },
 			);
-			dispatch(addMyOrder(data.data));
-			navigate("/order-placed");
+			if (paymentMethod == "cod") {
+				dispatch(addMyOrder(data.data));
+				navigate("/order-placed");
+			} else {
+				const orderId = data.orderId;
+				const razorpayOrder = data.razorpayOrder;
+				openRazorpayWindow(orderId, razorpayOrder);
+			}
 		} catch (error) {
 			console.log(error);
 		}
+	};
+	const openRazorpayWindow = (orderId, razorpayOrder) => {
+		const options = {
+			key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+			amount: razorpayOrder.amount,
+			currency: "INR",
+			name: "Foodie",
+			description: "Food Delivery Website",
+			order_id: razorpayOrder.id,
+			handler: async function (response) {
+				try {
+					const { data } = await axios.post(`${serverURl}/api/order/verify-payment`,{
+						razorpayPaymentId : response.razorpay_payment_id,
+						orderId
+					},{withCredentials:true})
+					console.log(data.data)
+					dispatch(addMyOrder(data.data));
+					navigate("/order-placed");
+				} catch (error) {
+					console.log(error)
+				}
+			},
+		};
+		const rzp = new window.Razorpay(options);
+		rzp.open();
 	};
 	useEffect(() => {
 		setAddressInput(address ?? "");

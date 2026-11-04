@@ -30,7 +30,7 @@ export const createEditShop = async (req, res) => {
 			shop = await Shop.create(updateData);
 		} else {
 			shop = await Shop.findByIdAndUpdate(shop._id, updateData, {
-				new: true,
+				returnDocument: "after",
 				runValidators: true,
 			});
 		}

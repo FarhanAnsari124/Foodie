@@ -60,7 +60,7 @@ export const editItem = async (req, res) => {
 			updateData.image = await uploadOnCloudinary(req.file.path);
 		}
 		const item = await Item.findByIdAndUpdate(itemId, updateData, {
-			new: true,
+			returnDocument: "after",
 			runValidators: true,
 		});
 		if (!item) {
