@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { serverURl } from "../App";
 import DeliveryBoyTracking from "./DeliveryBoyTracking";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ClipLoader } from "react-spinners";
 
 const DeliveryBoy = () => {
 	const [availableAssignments, setAvailableAssignments] = useState([]);
@@ -11,7 +13,14 @@ const DeliveryBoy = () => {
 	const [currentOrder, setCurrentOrder] = useState();
 	const [showOtpBox, setShowOtpBox] = useState(false);
 	const [otp, setOtp] = useState("");
+	const [todayDeliveries, setTodayDeliveries] = useState([]);
 	const [deliveryBoyLocation,setDeliveryBoyLocation] = useState(null)
+	
+	const [loading,setLoading] = useState(false)
+	const [message,setMessage] = useState("")
+
+	const ratePerDelivery = 50
+	const totalEarning = todayDeliveries.reduce((sum,d)=>sum+d.count*ratePerDelivery,0)
 	const getAssignment = async () => {
 		try {
 			const { data } = await axios.get(
@@ -21,7 +30,6 @@ const DeliveryBoy = () => {
 				},
 			);
 			setAvailableAssignments(data.data);
-			console.log(data.data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -76,6 +84,7 @@ const DeliveryBoy = () => {
 		}
 	};
 	const sendOtp = async (orderId, shopOrderId) => {
+		setLoading(true)
 		try {
 			const { data } = await axios.post(
 				`${serverURl}/api/order/send-delivery-otp`,
@@ -87,13 +96,15 @@ const DeliveryBoy = () => {
 					withCredentials: true,
 				},
 			);
+			setLoading(false)
 			setShowOtpBox(true);
-			
 		} catch (error) {
 			console.log(error);
+			setLoading(false)
 		}
 	};
 	const verifyOtp = async (orderId, shopOrderId) => {
+		setMessage("")
 		try {
 			const { data } = await axios.post(
 				`${serverURl}/api/order/verify-delivery-otp`,
@@ -106,6 +117,22 @@ const DeliveryBoy = () => {
 					withCredentials: true,
 				},
 			);
+			setMessage(data.message)
+			location.reload()
+		} catch (error) {
+			console.log(error);
+		}
+	};
+	const handleTodayDeliveries = async () => {
+		try {
+			const { data } = await axios.get(
+				`${serverURl}/api/order/get-today-deliveries`,
+				{
+					withCredentials: true,
+				},
+			);
+			console.log(data.data)
+			setTodayDeliveries(data.data)
 		} catch (error) {
 			console.log(error);
 		}
@@ -127,6 +154,7 @@ const DeliveryBoy = () => {
 	useEffect(() => {
 		getAssignment();
 		getCurrentOrder();
+		handleTodayDeliveries()
 	}, [userData]);
 	return (
 		<div className="w-screen min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-auto">
@@ -143,6 +171,25 @@ const DeliveryBoy = () => {
 						{deliveryBoyLocation?.lon.toFixed(6) || userData.location.coordinates[0].toFixed(6)}
 					</p>
 				</div>
+				<div className="bg-white rounded-2xl shadow-md p-5 w-[90%] mb-6 border border-orange-100">
+					<h1 className="text-lg font-bold mb-3 text-[#ff4d2d]">
+						Today Deliveries
+					</h1>
+					<ResponsiveContainer width="100%" height={200}>
+						<BarChart data={todayDeliveries}>
+							<CartesianGrid strokeDasharray="3 3"/>
+							<XAxis dataKey="hour" tickFormatter={(h)=>`${h}:00`}/>
+							<YAxis allowDecimals={false}/>
+							<Tooltip formatter={(value)=>[value,"orders"]} labelFormatter={(label)=>`${label}:00`}/>
+							<Bar dataKey="count" fill="#ff4d2d"/>
+						</BarChart>
+					</ResponsiveContainer>
+					<div className="max-w-sm mx-auto mt-6 p-6 bg-white rounded-2xl shadow-lg text-center">
+						<h1 className="text-xl font-semibold text-gray-800 mb-2">Today's Earning</h1>
+						<span className="text-3xl font-bold text-green-600">₹{totalEarning}</span>
+					</div>
+				</div>
+
 
 				{!currentOrder && (
 					<div className="bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100">
@@ -230,8 +277,9 @@ const DeliveryBoy = () => {
 										currentOrder.shopOrder?._id,
 									)
 								}
+								disabled={loading}
 							>
-								Mark As Delivered
+								{loading?<ClipLoader size={20} color="white"/>:"Mark As Delivered"}
 							</button>
 						) : (
 							<div className="mt-4 p-4 border rounded-xl bg-gray-50">
@@ -261,6 +309,7 @@ const DeliveryBoy = () => {
 								>
 									Submit OTP
 								</button>
+								{message && <p className="text-center text-green-400">{message}</p>}
 							</div>
 						)}
 					</div>
