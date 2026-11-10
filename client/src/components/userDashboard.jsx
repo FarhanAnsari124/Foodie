@@ -12,7 +12,7 @@ import axios from "axios";
 import { serverUrl } from "../App.jsx";
 import { useNavigate } from "react-router-dom";
 
-const userDashboard = () => {
+const UserDashboard = () => {
 	const catScrollRef = useRef();
 	const shopScrollRef = useRef();
 	useGetShopByCity();
@@ -170,4 +170,4 @@ const userDashboard = () => {
 	);
 };
 
-export default userDashboard;
+export default UserDashboard;
