@@ -20,7 +20,7 @@ import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
 import { io } from 'socket.io-client'
 import { setSocket } from './redux/user.slice'
-export const serverUrl = import.meta.env.SERVER_URL || "http://localhost:8000"
+export const serverUrl = import.meta.env.VITE_SERVER_URL
 
 const App = () => {
   const {loading}= useGetCurrentUser()
