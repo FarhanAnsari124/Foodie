@@ -1,7 +1,7 @@
 import React from 'react'
 import {FaPen,FaTrashAlt} from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { serverURl } from '../App'
+import { serverUrl } from '../App'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { setMyShopData } from '../redux/owner.slice'
@@ -11,7 +11,7 @@ const OwnerItemCard = ({data}) => {
     const dispatch = useDispatch()
     const handleDelete = async()=>{
         try {
-            const result = await axios.get(`${serverURl}/api/item/delete/${data._id}`,{withCredentials:true})
+            const result = await axios.get(`${serverUrl}/api/item/delete/${data._id}`,{withCredentials:true})
             dispatch(setMyShopData(result.data.data))
         } catch (error) {
             console.log(error)

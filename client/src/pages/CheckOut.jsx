@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { setAddress, setLocation } from "../redux/map.slice";
 import axios from "axios";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import { addMyOrder } from "../redux/user.slice";
 
 function ReCenterMap({ location }) {
@@ -75,7 +75,7 @@ const CheckOut = () => {
 	const handlePlaceOrder = async () => {
 		try {
 			const { data } = await axios.post(
-				`${serverURl}/api/order/place-order`,
+				`${serverUrl}/api/order/place-order`,
 				{
 					cartItems,
 					paymentMethod,
@@ -110,7 +110,7 @@ const CheckOut = () => {
 			order_id: razorpayOrder.id,
 			handler: async function (response) {
 				try {
-					const { data } = await axios.post(`${serverURl}/api/order/verify-payment`,{
+					const { data } = await axios.post(`${serverUrl}/api/order/verify-payment`,{
 						razorpayPaymentId : response.razorpay_payment_id,
 						orderId
 					},{withCredentials:true})

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaStore, FaUtensils, FaArrowLeft } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
@@ -14,7 +14,7 @@ const Shop = () => {
 	const handleShop = async () => {
 		try {
 			const { data } = await axios.get(
-				`${serverURl}/api/item/get-by-shop/${shopId}`,
+				`${serverUrl}/api/item/get-by-shop/${shopId}`,
 				{
 					withCredentials: true,
 				},

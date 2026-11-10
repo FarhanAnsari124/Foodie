@@ -5,7 +5,7 @@ import OwnerDashboard from "../components/OwnerDashboard";
 import { useDispatch, useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import axios from "axios";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import { setMyShopData } from "../redux/owner.slice.js";
 import { ClipLoader } from "react-spinners";
 
@@ -51,7 +51,7 @@ const AddItem = () => {
 				formData.append("image", backendImage);
 			}
 			const result = await axios.post(
-				`${serverURl}/api/item/add-item`,
+				`${serverUrl}/api/item/add-item`,
 				formData,
 				{
 					withCredentials: true,

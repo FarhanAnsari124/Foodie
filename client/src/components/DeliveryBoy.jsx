@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Nav from "./Nav";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import DeliveryBoyTracking from "./DeliveryBoyTracking";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ClipLoader } from "react-spinners";
@@ -24,7 +24,7 @@ const DeliveryBoy = () => {
 	const getAssignment = async () => {
 		try {
 			const { data } = await axios.get(
-				`${serverURl}/api/order/get-assignments`,
+				`${serverUrl}/api/order/get-assignments`,
 				{
 					withCredentials: true,
 				},
@@ -72,7 +72,7 @@ const DeliveryBoy = () => {
 	const acceptOrder = async (assignmentId) => {
 		try {
 			const { data } = await axios.get(
-				`${serverURl}/api/order/accept-order/${assignmentId}`,
+				`${serverUrl}/api/order/accept-order/${assignmentId}`,
 				{
 					withCredentials: true,
 				},
@@ -87,7 +87,7 @@ const DeliveryBoy = () => {
 		setLoading(true)
 		try {
 			const { data } = await axios.post(
-				`${serverURl}/api/order/send-delivery-otp`,
+				`${serverUrl}/api/order/send-delivery-otp`,
 				{
 					orderId,
 					shopOrderId,
@@ -107,7 +107,7 @@ const DeliveryBoy = () => {
 		setMessage("")
 		try {
 			const { data } = await axios.post(
-				`${serverURl}/api/order/verify-delivery-otp`,
+				`${serverUrl}/api/order/verify-delivery-otp`,
 				{
 					orderId,
 					shopOrderId,
@@ -126,7 +126,7 @@ const DeliveryBoy = () => {
 	const handleTodayDeliveries = async () => {
 		try {
 			const { data } = await axios.get(
-				`${serverURl}/api/order/get-today-deliveries`,
+				`${serverUrl}/api/order/get-today-deliveries`,
 				{
 					withCredentials: true,
 				},
@@ -140,7 +140,7 @@ const DeliveryBoy = () => {
 	const getCurrentOrder = async () => {
 		try {
 			const { data } = await axios.get(
-				`${serverURl}/api/order/get-current-order`,
+				`${serverUrl}/api/order/get-current-order`,
 				{
 					withCredentials: true,
 				},

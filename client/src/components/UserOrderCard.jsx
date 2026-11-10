@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import {
 	FaStar,
 } from "react-icons/fa";
@@ -19,7 +19,7 @@ const UserOrderCard = ({ data }) => {
 	const handleRating = async (itemId, rating) => {
 		try {
 			const { data } = await axios.post(
-				`${serverURl}/api/item/rating`,
+				`${serverUrl}/api/item/rating`,
 				{
 					itemId,
 					rating,

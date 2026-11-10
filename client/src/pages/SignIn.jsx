@@ -4,7 +4,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import {ClipLoader} from 'react-spinners'
@@ -27,7 +27,7 @@ const SignIn = () => {
     setLoading(true)
     try {
       const result = await axios.post(
-        `${serverURl}/api/auth/signin`,
+        `${serverUrl}/api/auth/signin`,
         {
           email,
           password,
@@ -45,7 +45,7 @@ const SignIn = () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     try {
-      const { data } = await axios.post(`${serverURl}/api/auth/google-auth`, {
+      const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
         email: result.user.email,
       },{withCredentials:true});
       dispatch(setUserData(data.data))

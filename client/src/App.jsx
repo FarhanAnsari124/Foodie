@@ -20,7 +20,7 @@ import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
 import { io } from 'socket.io-client'
 import { setSocket } from './redux/user.slice'
-export const serverURl = "http://localhost:8000"
+export const serverUrl = import.meta.env.SERVER_URL || "http://localhost:8000"
 
 const App = () => {
   const {loading}= useGetCurrentUser()
@@ -30,7 +30,7 @@ const App = () => {
   const {userData} = useSelector(state=>state.user)
   const dispatch = useDispatch()
   useEffect(()=>{
-    const socketInstance = io(serverURl,{withCredentials:true})
+    const socketInstance = io(serverUrl,{withCredentials:true})
     dispatch(setSocket(socketInstance))
     socketInstance.on('connect',()=>{
       if(userData){

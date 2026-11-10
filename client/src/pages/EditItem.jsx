@@ -5,7 +5,7 @@ import OwnerDashboard from "../components/OwnerDashboard";
 import { useDispatch, useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa";
 import axios from "axios";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import { setMyShopData } from "../redux/owner.slice.js";
 import { ClipLoader } from "react-spinners";
 
@@ -55,7 +55,7 @@ const EditItem = () => {
 				formData.append("image", backendImage);
 			}
 			const result = await axios.post(
-				`${serverURl}/api/item/edit-item/${itemId}`,
+				`${serverUrl}/api/item/edit-item/${itemId}`,
 				formData,
 				{
 					withCredentials: true,
@@ -73,7 +73,7 @@ const EditItem = () => {
     useEffect(()=>{
         const handleGetItemById = async()=>{
             try {
-                const result = await axios.get(`${serverURl}/api/item/get-by-id/${itemId}`,{withCredentials:true})
+                const result = await axios.get(`${serverUrl}/api/item/get-by-id/${itemId}`,{withCredentials:true})
                 setCurrentItem(result.data.data)
             } catch (error) {
                 console.log(error)

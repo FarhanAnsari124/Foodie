@@ -7,7 +7,7 @@ import { FaPlus } from "react-icons/fa6";
 import { TbReceipt2 } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import { setSearchItem, setUserData } from "../redux/user.slice";
 import { useNavigate } from "react-router-dom";
 const Nav = () => {
@@ -22,7 +22,7 @@ const Nav = () => {
 	const handleSearchItems = async () => {
 		try {
 			const { data } = await axios.get(
-				`${serverURl}/api/item/search-items?query=${query}&city=${city}`,
+				`${serverUrl}/api/item/search-items?query=${query}&city=${city}`,
 				{ withCredentials: true },
 			);
 			console.log(data.data);
@@ -33,7 +33,7 @@ const Nav = () => {
 	};
 	const handleSignOut = async () => {
 		try {
-			const result = await axios.get(`${serverURl}/api/auth/signout`, {
+			const result = await axios.get(`${serverUrl}/api/auth/signout`, {
 				withCredentials: true,
 			});
 			dispatch(setUserData(null));

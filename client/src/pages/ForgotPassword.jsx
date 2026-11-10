@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { serverURl } from "../App";
+import { serverUrl } from "../App";
 import {ClipLoader} from 'react-spinners'
 
 const ForgotPassword = () => {
@@ -19,7 +19,7 @@ const ForgotPassword = () => {
     setLoading(true)
     try {
       const result = await axios.post(
-        `${serverURl}/api/auth/send-otp`,
+        `${serverUrl}/api/auth/send-otp`,
         {
           email,
         },
@@ -37,7 +37,7 @@ const ForgotPassword = () => {
     setLoading(true);
     try {
       const result = await axios.post(
-        `${serverURl}/api/auth/verify-otp`,
+        `${serverUrl}/api/auth/verify-otp`,
         {
           email,
           otp,
@@ -56,7 +56,7 @@ const ForgotPassword = () => {
     setLoading(true)
     try {
       const result = await axios.post(
-        `${serverURl}/api/auth/reset-password`,
+        `${serverUrl}/api/auth/reset-password`,
         {
           email,
           password,

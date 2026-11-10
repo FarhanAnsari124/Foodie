@@ -9,7 +9,7 @@ import useGetShopByCity from "../hooks/useGetShopByCity.jsx";
 import useGetItemsByCity from "../hooks/useGetItemsByCity.jsx";
 import FoodCard from "./FoodCard.jsx";
 import axios from "axios";
-import { serverURl } from "../App.jsx";
+import { serverUrl } from "../App.jsx";
 import { useNavigate } from "react-router-dom";
 
 const userDashboard = () => {

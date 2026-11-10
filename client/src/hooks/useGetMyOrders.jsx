@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { serverURl } from '../App'
+import { serverUrl } from '../App'
 import axios from'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setMyOrders } from '../redux/user.slice.js'
@@ -9,7 +9,7 @@ const useGetMyOrders = () => {
   useEffect(()=>{
     const fetchOrders = async () =>{
         try {
-            const {data} = await axios.get(`${serverURl}/api/order/my-orders`,{withCredentials:true})
+            const {data} = await axios.get(`${serverUrl}/api/order/my-orders`,{withCredentials:true})
             dispatch(setMyOrders(data.data))
             console.log(data.data)
         } catch (error) {
