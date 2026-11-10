@@ -15,10 +15,16 @@ import { serverUrl } from "../App";
 import { addMyOrder } from "../redux/user.slice";
 
 function ReCenterMap({ location }) {
-	if (location.lat != null && location.lon != null) {
-		const map = useMap();
-		map.setView([location.lat, location.lon], 16, { animate: true });
-	}
+	const map = useMap();
+
+	useEffect(() => {
+		if (location?.lat != null && location?.lon != null) {
+			map.setView([Number(location.lat), Number(location.lon)], 16, {
+				animate: true,
+			});
+		}
+	}, [location.lat, location.lon, map]);
+
 	return null;
 }
 
@@ -110,15 +116,19 @@ const CheckOut = () => {
 			order_id: razorpayOrder.id,
 			handler: async function (response) {
 				try {
-					const { data } = await axios.post(`${serverUrl}/api/order/verify-payment`,{
-						razorpayPaymentId : response.razorpay_payment_id,
-						orderId
-					},{withCredentials:true})
-					console.log(data.data)
+					const { data } = await axios.post(
+						`${serverUrl}/api/order/verify-payment`,
+						{
+							razorpayPaymentId: response.razorpay_payment_id,
+							orderId,
+						},
+						{ withCredentials: true },
+					);
+					console.log(data.data);
 					dispatch(addMyOrder(data.data));
 					navigate("/order-placed");
 				} catch (error) {
-					console.log(error)
+					console.log(error);
 				}
 			},
 		};
@@ -166,23 +176,37 @@ const CheckOut = () => {
 					</div>
 					<div className="rounded-xl border overflow-hidden">
 						<div className="h-64 w-full flex items-center justify-center">
-							<MapContainer
-								className={"w-full h-full"}
-								center={[location?.lat, location?.lon]}
-								zoom={16}
-							>
-								<TileLayer
-									attribution='&copy; <a href="https://www.openstreetmap.org/
-  copyright">OpenStreetMap</a> contributors'
-									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-								/>
-								<ReCenterMap location={location} />
-								<Marker
-									position={[location.lat, location.lon]}
-									draggable
-									eventHandlers={{ dragend: onDragEnd }}
-								/>
-							</MapContainer>
+							{location?.lat != null && location?.lon != null ? (
+								<MapContainer
+									className="w-full h-full"
+									center={[
+										Number(location.lat),
+										Number(location.lon),
+									]}
+									zoom={16}
+									scrollWheelZoom={true}
+								>
+									<TileLayer
+										attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+										url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+									/>
+
+									<ReCenterMap location={location} />
+
+									<Marker
+										position={[
+											Number(location.lat),
+											Number(location.lon),
+										]}
+										draggable
+										eventHandlers={{ dragend: onDragEnd }}
+									/>
+								</MapContainer>
+							) : (
+								<div className="flex items-center justify-center h-full">
+									Please select your delivery location.
+								</div>
+							)}
 						</div>
 					</div>
 				</section>
