@@ -2,10 +2,6 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../App";
-import {
-	FaStar,
-} from "react-icons/fa";
-import { FaRegStar } from "react-icons/fa6";
 
 const UserOrderCard = ({ data }) => {
 	const formatDate = (dateString) => {

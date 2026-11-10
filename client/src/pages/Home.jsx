@@ -2,8 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import DeliveryBoy from "../components/DeliveryBoy";
 import UserDashboard from "../components/UserDashboard";
-import OwnerDashboard from "../components/OwnerDashboard";
-import useGetMyShop from "../hooks/useGetMyShop";
+import OwnerDashboard from "../components/OwnerDashboard"
 
 const Home = () => {
 	const { userData } = useSelector((state) => state.user);

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { data, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { serverUrl } from "../App";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import DeliveryBoyTracking from "../components/DeliveryBoyTracking";

@@ -4,12 +4,10 @@ import CategoryCard from "./CategoryCard";
 import Nav from "./Nav";
 import { FaCircleChevronLeft } from "react-icons/fa6";
 import { FaCircleChevronRight } from "react-icons/fa6";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import useGetShopByCity from "../hooks/useGetShopByCity.jsx";
 import useGetItemsByCity from "../hooks/useGetItemsByCity.jsx";
 import FoodCard from "./FoodCard.jsx";
-import axios from "axios";
-import { serverUrl } from "../App.jsx";
 import { useNavigate } from "react-router-dom";
 
 const UserDashboard = () => {
