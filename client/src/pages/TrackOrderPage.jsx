@@ -4,11 +4,14 @@ import { data, useNavigate, useParams } from "react-router-dom";
 import { serverURl } from "../App";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import DeliveryBoyTracking from "../components/DeliveryBoyTracking";
+import { useSelector } from "react-redux";
 
 const TrackOrderPage = () => {
 	const { orderId } = useParams();
 	const [currentOrder, setCurrentOrder] = useState();
 	const navigate = useNavigate();
+	const { socket } = useSelector((state) => state.user);
+	const [liveLocations, setLiveLocations] = useState({});
 	const handleGetOrder = async () => {
 		try {
 			const { data } = await axios.get(
@@ -21,6 +24,29 @@ const TrackOrderPage = () => {
 			console.log(error);
 		}
 	};
+	useEffect(() => {
+		if (!socket) return;
+
+		const handleLocationUpdate = ({
+			deliveryBoyId,
+			latitude,
+			longitude,
+		}) => {
+			setLiveLocations((prev) => ({
+				...prev,
+				[String(deliveryBoyId)]: {
+					lat: latitude,
+					lon: longitude,
+				},
+			}));
+		};
+
+		socket.on("update-delivery-location", handleLocationUpdate);
+
+		return () => {
+			socket.off("update-delivery-location", handleLocationUpdate);
+		};
+	}, [socket]);
 	useEffect(() => {
 		handleGetOrder();
 	}, [orderId]);
@@ -85,26 +111,29 @@ const TrackOrderPage = () => {
 							Delivered
 						</p>
 					)}
-					{shopOrder.assignedDeliveryBoy && shopOrder.status!="Delivered" && (
-						<div className="h-[400px] w-full rounded-2xl overflow-hidden shadow-md">
-							<DeliveryBoyTracking
-								data={{
-									deliveryBoyLocation: {
-										lat: shopOrder.assignedDeliveryBoy
-											.location.coordinates[1],
-										lon: shopOrder.assignedDeliveryBoy
-											.location.coordinates[0],
-									},
-									customerLocation: {
-										lat: currentOrder.deliveryAddress
-											.latitude,
-										lon: currentOrder.deliveryAddress
-											.longitude,
-									},
-								}}
-							/>
-						</div>
-					)}
+					{shopOrder.assignedDeliveryBoy &&
+						shopOrder.status != "Delivered" && (
+							<div className="h-[400px] w-full rounded-2xl overflow-hidden shadow-md">
+								<DeliveryBoyTracking
+									data={{
+										deliveryBoyLocation: liveLocations[
+											String(shopOrder.assignedDeliveryBoy._id)
+										] || {
+											lat: shopOrder.assignedDeliveryBoy
+												.location.coordinates[1],
+											lon: shopOrder.assignedDeliveryBoy
+												.location.coordinates[0],
+										},
+										customerLocation: {
+											lat: currentOrder.deliveryAddress
+												.latitude,
+											lon: currentOrder.deliveryAddress
+												.longitude,
+										},
+									}}
+								/>
+							</div>
+						)}
 				</div>
 			))}
 		</div>

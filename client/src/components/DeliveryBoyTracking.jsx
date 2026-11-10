@@ -47,55 +47,76 @@ const DeliveryBoyTracking = ({ data }) => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
-	useEffect(() => {
-		const controller = new AbortController();
+	
+useEffect(() => {
+    const controller = new AbortController();
 
-		const getRoute = async () => {
-			try {
-				setLoading(true);
-				setError("");
+    const getRoute = async () => {
+        try {
+            if (
+                !Number.isFinite(Number(deliveryBoyLat)) ||
+                !Number.isFinite(Number(deliveryBoyLon)) ||
+                !Number.isFinite(Number(customerLat)) ||
+                !Number.isFinite(Number(customerLon))
+            ) {
+                setLoading(false);
+                return;
+            }
 
-				const url =
-					`https://router.project-osrm.org/route/v1/driving/` +
-					`${deliveryBoyLon},${deliveryBoyLat};` +
-					`${customerLon},${customerLat}` +
-					`?overview=full&geometries=geojson`;
+            setLoading(true);
+            setError("");
 
-				const response = await fetch(url, {
-					signal: controller.signal,
-				});
+            const url =
+                `https://router.project-osrm.org/route/v1/driving/` +
+                `${deliveryBoyLon},${deliveryBoyLat};` +
+                `${customerLon},${customerLat}` +
+                `?overview=full&geometries=geojson`;
 
-				if (!response.ok) {
-					throw new Error("Failed to fetch route");
-				}
+            const response = await fetch(url, {
+                signal: controller.signal,
+            });
 
-				const result = await response.json();
+            if (!response.ok) {
+                throw new Error(`Route API Error: ${response.status}`);
+            }
 
-				if (result.code !== "Ok" || !result.routes?.length) {
-					throw new Error("No road route found");
-				}
-				const coordinates = result.routes[0].geometry.coordinates;
-				setPath(
-					coordinates.map(([lon, lat]) => [lat, lon])
-				);
-			} catch (err) {
-				if (err.name !== "AbortError") {
-					setError(err.message || "Unable to load route");
-				}
-			} finally {
-				if (!controller.signal.aborted) {
-					setLoading(false);
-				}
-			}
-		};
-		getRoute();
-		return () => controller.abort();
-	}, [
-		deliveryBoyLat,
-		deliveryBoyLon,
-		customerLat,
-		customerLon,
-	]);
+            const result = await response.json();
+
+            if (result.code !== "Ok" || !result.routes?.length) {
+                throw new Error("No road route found");
+            }
+
+            const coordinates = result.routes[0].geometry.coordinates;
+
+            setPath(
+                coordinates.map(([lon, lat]) => [lat, lon])
+            );
+
+        } catch (err) {
+            if (err.name !== "AbortError") {
+                setError(err.message || "Unable to load route");
+            }
+        } finally {
+            if (!controller.signal.aborted) {
+                setLoading(false);
+            }
+        }
+    };
+
+    const timer = setTimeout(getRoute, 1500);
+
+    return () => {
+        clearTimeout(timer);
+        controller.abort();
+    };
+
+}, [
+    deliveryBoyLat,
+    deliveryBoyLon,
+    customerLat,
+    customerLon,
+]);
+
 
 	const center = [deliveryBoyLat, deliveryBoyLon];
 

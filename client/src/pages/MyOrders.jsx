@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import UserOrderCard from "../components/UserOrderCard";
 import OwnerOrderCard from "../components/OwnerOrderCard";
-import { setMyOrders, updateRealtimeOrderStatus } from "../redux/user.slice";
+import { addMyOrder, updateRealtimeOrderStatus } from "../redux/user.slice";
 
 const MyOrders = () => {
 	const { userData, myOrders, socket } = useSelector((state) => state.user);
@@ -16,7 +16,7 @@ const MyOrders = () => {
 		const handleNewOrder = (data) => {
 			if (userData.role === "Owner") {
 				if (data.shopOrders?.owner?._id === userData._id) {
-					dispatch(setMyOrders(data));
+					dispatch(addMyOrder(data));
 				}
 			}
 		};
@@ -33,7 +33,7 @@ const MyOrders = () => {
 			socket?.off("newOrder", handleNewOrder);
 			socket?.off("update-status", handleUpdateStatus);
 		};
-	}, [socket, userData?._id, userData?.role, myOrders, dispatch]);
+	}, [socket, userData?._id, userData?.role, dispatch]);
 
 	return (
 		<div className="w-full min-h-screen bg-[#fff9f6] flex justify-center px-40">

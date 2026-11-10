@@ -7,10 +7,11 @@ import DeliveryBoyTracking from "./DeliveryBoyTracking";
 
 const DeliveryBoy = () => {
 	const [availableAssignments, setAvailableAssignments] = useState([]);
-	const { userData,socket } = useSelector((state) => state.user);
+	const { userData, socket } = useSelector((state) => state.user);
 	const [currentOrder, setCurrentOrder] = useState();
 	const [showOtpBox, setShowOtpBox] = useState(false);
 	const [otp, setOtp] = useState("");
+	const [deliveryBoyLocation,setDeliveryBoyLocation] = useState(null)
 	const getAssignment = async () => {
 		try {
 			const { data } = await axios.get(
@@ -25,38 +26,41 @@ const DeliveryBoy = () => {
 			console.log(error);
 		}
 	};
-	useEffect(()=>{
-		if(!socket || userData.role !=='Delivery Boy') return;
-		socket?.on('newAssignment',(data)=>{
-			if(data.sentTo==userData._id){
-				setAvailableAssignments([...availableAssignments,data])
+	useEffect(() => {
+		if (!socket || userData.role !== "Delivery Boy") return;
+		socket?.on("newAssignment", (data) => {
+			if (data.sentTo == userData._id) {
+				setAvailableAssignments([...availableAssignments, data]);
 			}
-		})
+		});
 		let watchId;
-		if(navigator.geolocation){
-			watchId = navigator.geolocation.watchPosition((position)=>{
-				const latitude = position.coords.latitude
-				const longitude = position.coords.longitude
-				socket.emit('update-location',{
+		if (navigator.geolocation) {
+			watchId = navigator.geolocation.watchPosition((position) => {
+				const latitude = position.coords.latitude;
+				const longitude = position.coords.longitude;
+				setDeliveryBoyLocation({lat:latitude,lon:longitude})
+				socket.emit("update-location", {
 					latitude,
 					longitude,
-					userId:userData._id
-				})
-			}),
-			(error)=>{
-				console.log(error)
+					userId: userData._id,
+				});
 			},
-			{
-				enableHighAccuracy:true
-			}
+				(error) => {
+					console.log(error);
+				},
+				{
+					enableHighAccuracy: true,
+					maximumAge: 5000,
+                	timeout: 10000
+				});
 		}
-		return ()=>{
-			socket?.off('newAssignment')
-			if(watchId){
-				navigator.geolocation.clearWatch(watchId)
+		return () => {
+			socket?.off("newAssignment");
+			if (watchId!== undefined) {
+				navigator.geolocation.clearWatch(watchId);
 			}
-		}
-	},[socket,userData])
+		};
+	}, [socket, userData]);
 	const acceptOrder = async (assignmentId) => {
 		try {
 			const { data } = await axios.get(
@@ -65,7 +69,7 @@ const DeliveryBoy = () => {
 					withCredentials: true,
 				},
 			);
-			console.log(data.data);
+			
 			await getCurrentOrder();
 		} catch (error) {
 			console.log(error);
@@ -84,7 +88,7 @@ const DeliveryBoy = () => {
 				},
 			);
 			setShowOtpBox(true);
-			console.log(data.data);
+			
 		} catch (error) {
 			console.log(error);
 		}
@@ -102,7 +106,6 @@ const DeliveryBoy = () => {
 					withCredentials: true,
 				},
 			);
-			console.log(data.data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -135,9 +138,9 @@ const DeliveryBoy = () => {
 					</h1>
 					<p className="text-[#ff4d2d]">
 						<span className="font-semibold">Latitude: </span>
-						{userData.location.coordinates[1].toFixed(6)},
+						{deliveryBoyLocation?.lat.toFixed(6) || userData.location.coordinates[1].toFixed(6)},
 						<span className="font-semibold"> Longitude: </span>
-						{userData.location.coordinates[0].toFixed(6)}
+						{deliveryBoyLocation?.lon.toFixed(6) || userData.location.coordinates[0].toFixed(6)}
 					</p>
 				</div>
 
@@ -204,7 +207,20 @@ const DeliveryBoy = () => {
 								items | {currentOrder.shopOrder.subTotal}
 							</p>
 						</div>
-						<DeliveryBoyTracking data={currentOrder} />
+						<DeliveryBoyTracking
+							data={{
+								deliveryBoyLocation: deliveryBoyLocation || {
+									lat: userData.location
+										.coordinates[1],
+									lon: userData.location
+										.coordinates[0],
+								},
+								customerLocation: {
+									lat: currentOrder.deliveryAddress.latitude,
+									lon: currentOrder.deliveryAddress.longitude,
+								},
+							}}
+						/>
 						{!showOtpBox ? (
 							<button
 								className="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200"

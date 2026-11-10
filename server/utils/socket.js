@@ -25,12 +25,45 @@ export const socketHandler = (io) => {
 					{ socketId: socket.id },
 					{
 						socketId: null,
-						inOnline: false,
+						isOnline: false,
 					},
 				);
 			} catch (error) {
 				console.log(error);
 			}
 		});
+		socket.on(
+			"update-location",
+			async ({ latitude, longitude, userId }) => {
+				try {
+					if (
+						latitude === undefined ||
+						longitude === undefined ||
+						!userId ||
+						!Number.isFinite(Number(latitude)) ||
+						!Number.isFinite(Number(longitude))
+					) {
+						return;
+					}
+					const user = await User.findByIdAndUpdate(userId, {
+						location: {
+							type: "Point",
+							coordinates: [longitude, latitude],
+						},
+						isOnline: true,
+						socketId: socket.id,
+					});
+					if (user) {
+						io.emit("update-delivery-location", {
+							deliveryBoyId: userId,
+							latitude,
+							longitude,
+						});
+					}
+				} catch (error) {
+					console.log(error);
+				}
+			},
+		);
 	});
 };
