@@ -1,10 +1,25 @@
 @import "tailwindcss";
 
-*{
-    scrollbar-width: none;
-    -ms-overflow-style:none;
-}
-
-::-webkit-scrollbar,::-webkit-scrollbar{
-    display: none;
-}
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#24221f;background:#fffaf5;font-synthesis:none;text-rendering:optimizeLegibility}
+*{box-sizing:border-box;scrollbar-width:none}
+*::-webkit-scrollbar{display:none}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;background:#fffaf5}
+button,a,input,select{font:inherit}
+button{cursor:pointer}
+::selection{background:#ff6b35;color:white}
+.foodie-shell{background:radial-gradient(ellipse at 85% 5%,rgba(255,197,128,.18),transparent 32%),#fffaf5}
+.foodie-nav{background:rgba(255,252,247,.88);backdrop-filter:blur(18px);border-bottom:1px solid rgba(70,48,28,.07)}
+.foodie-shadow{box-shadow:0 18px 55px rgba(68,45,25,.08)}
+.foodie-card{transition:transform .28s ease,box-shadow .28s ease}
+.foodie-card:hover{transform:translateY(-6px);box-shadow:0 22px 48px rgba(68,45,25,.13)}
+.foodie-float{animation:foodieFloat 5s ease-in-out infinite}
+.foodie-in{animation:foodieIn .65s cubic-bezier(.2,.75,.25,1) both}
+.foodie-delay-1{animation-delay:.1s}.foodie-delay-2{animation-delay:.2s}.foodie-delay-3{animation-delay:.3s}
+@keyframes foodieFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-13px) rotate(2deg)}}
+@keyframes foodieIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.foodie-gradient{background:linear-gradient(115deg,#ff7847,#ff4d2d 55%,#ed3f2c)}
+.foodie-outline{border:1px solid rgba(85,60,40,.1)}
+.foodie-input{width:100%;border:1px solid #eee4d9;border-radius:14px;padding:13px 15px;background:#fffdfa;outline:none;transition:border .2s,box-shadow .2s}
+.foodie-input:focus{border-color:#ff7847;box-shadow:0 0 0 4px rgba(255,120,71,.12)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
