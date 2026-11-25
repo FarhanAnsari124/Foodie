@@ -2,7 +2,8 @@ import {useEffect,useRef,useState} from "react";
 import {categories} from "../category.js";
 import CategoryCard from "./CategoryCard";
 import Nav from "./Nav";
-import {FaArrowRight,FaChevronLeft,FaChevronRight,FaMotorcycle,FaSearch,FaUtensils} from "react-icons/fa";
+import {FaArrowRight,FaChevronLeft,FaChevronRight,FaMotorcycle,FaUtensils} from "react-icons/fa";
+import heroImage from "../assets/hero.png";
 import {useSelector} from "react-redux";
 import useGetShopByCity from "../hooks/useGetShopByCity.jsx";
 import useGetItemsByCity from "../hooks/useGetItemsByCity.jsx";
@@ -10,7 +11,7 @@ import FoodCard from "./FoodCard.jsx";
 import {useNavigate} from "react-router-dom";
 
 const UserDashboard=()=>{
- const catScrollRef=useRef(null);const shopScrollRef=useRef(null);
+ const catScrollRef=useRef(null);
  useGetShopByCity();useGetItemsByCity();
  const [activeCategory,setActiveCategory]=useState("All");
  const [updatedItemsList,setUpdatedItemsList]=useState([]);
@@ -33,7 +34,7 @@ const UserDashboard=()=>{
     </div>
     <div className="hidden md:block absolute right-[7%] top-1/2 -translate-y-1/2 w-[330px] h-[330px] foodie-float">
      <div className="absolute inset-0 rounded-full border-[18px] border-white/15"/>
-     <img src="/src/assets/hero.png" alt="Delicious meal" className="absolute inset-4 w-[calc(100%-32px)] h-[calc(100%-32px)] object-contain drop-shadow-2xl"/>
+     <img src={heroImage} alt="Delicious meal" className="absolute inset-4 w-[calc(100%-32px)] h-[calc(100%-32px)] object-contain drop-shadow-2xl"/>
      <div className="absolute -left-8 bottom-7 bg-white text-[#29241f] rounded-2xl px-4 py-3 shadow-xl"><div className="font-black text-lg">Freshly made</div><div className="text-xs text-gray-500">Just for your cravings</div></div>
     </div>
     <div className="md:hidden absolute right-[-28px] bottom-[-40px] text-[145px] opacity-15 rotate-[-15deg]">🍔</div>
