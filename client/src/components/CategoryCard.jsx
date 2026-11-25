@@ -1,14 +1,8 @@
-import React from 'react'
-
-const CategoryCard = ({data,onClick}) => {
-  return (
-    <div className='w-[120px] h-[120px] md:w-[180px] md:h-[180px] rounded-2xl border-2 border-[#ff4d2d] shrink-0 overflow-hidden bg-white shadow-xl shadow-gray-200 hover:shadow-lg transition-shadow relative' onClick={onClick}>
-       <img src={data.image} alt="" className='w-full h-full object-cover transform hover:scale-110 transition-transform duration-300'/>
-       <div className='absolute bottom-0 w-full left-0 bg-[#ffffff96] bg-opacity-95 px-3 py-1 rounded-t-xl text-center shadow text-sm font-medium text-gray-800 backdrop-blur'>
-        {data.name || data.category}
-       </div>
-    </div>
-  )
-}
-
-export default CategoryCard
+import React from "react";
+const CategoryCard=({data,onClick,active=false})=><button onClick={onClick} className={`group shrink-0 w-[112px] sm:w-[132px] text-center ${active?"opacity-100":"opacity-90"}`}>
+ <span className={`block rounded-[26px] p-1.5 transition-all duration-300 ${active?"bg-[#ff6b3d] shadow-lg shadow-orange-200":"bg-white foodie-outline group-hover:-translate-y-1 group-hover:shadow-lg"}`}>
+  <span className="block h-[94px] sm:h-[112px] rounded-[21px] overflow-hidden bg-[#fff1e7]"><img src={data.image} alt={data.name||data.category||"Food"} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/></span>
+ </span>
+ <span className={`mt-3 block text-sm font-bold ${active?"text-[#f05a35]":"text-[#62594f]"}`}>{data.name||data.category}</span>
+</button>;
+export default CategoryCard;
