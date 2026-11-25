@@ -2,7 +2,8 @@ import axios from "axios";
 import React,{useEffect,useState} from "react";
 import {serverUrl} from "../App";
 import {useNavigate,useParams} from "react-router-dom";
-import {FaArrowLeft,FaLocationDot,FaUtensils} from "react-icons/fa";
+import {FaArrowLeft,FaUtensils} from "react-icons/fa";
+import {FaLocationDot} from "react-icons/fa6";
 import FoodCard from "../components/FoodCard";
 const Shop=()=>{
  const {shopId}=useParams();const [items,setItems]=useState([]);const [shop,setShop]=useState(null);const [loading,setLoading]=useState(true);const navigate=useNavigate();
