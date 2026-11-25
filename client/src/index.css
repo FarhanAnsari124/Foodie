@@ -1,10 +1,67 @@
 @import "tailwindcss";
 
-*{
-    scrollbar-width: none;
-    -ms-overflow-style:none;
+:root {
+  color-scheme: dark;
+  --bg-canvas: #050505;
+  --bg-surface: #121212;
+  --bg-elevated: #1a1a1a;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --accent-orange: #ff5e00;
+  --accent-orange-light: #ff7a1a;
+  --accent-orange-glow: rgba(255, 94, 0, 0.25);
 }
 
-::-webkit-scrollbar,::-webkit-scrollbar{
-    display: none;
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #050505;
+  color: #f4f4f5;
+  overflow-x: hidden;
+}
+
+.foodie-card {
+  background: linear-gradient(145deg, #161616 0%, #0d0d0d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.foodie-card-hover {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.foodie-card-hover:hover {
+  border-color: rgba(255, 107, 26, 0.5);
+  box-shadow: 0 12px 32px rgba(255, 94, 0, 0.14);
+}
+
+.foodie-btn-primary {
+  background: linear-gradient(135deg, #ff6b1a 0%, #ea580c 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(255, 94, 0, 0.32);
+  transition: all 0.2s ease;
+}
+
+.foodie-btn-primary:hover {
+  background: linear-gradient(135deg, #ff7c33 0%, #f97316 100%);
+  box-shadow: 0 10px 28px rgba(255, 94, 0, 0.45);
+}
+
+/* Dark theme styling for Leaflet map controls and popups */
+.leaflet-container {
+  background: #0d0d0d;
+  font-family: "Poppins", sans-serif;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #161616 !important;
+  color: #f4f4f5 !important;
+  border: 1px solid rgba(255, 107, 26, 0.35);
 }

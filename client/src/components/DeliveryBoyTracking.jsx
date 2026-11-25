@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import scooter from "../assets/scooter.png";
 import home from "../assets/home.png";
 import L from "leaflet";
@@ -47,81 +46,70 @@ const DeliveryBoyTracking = ({ data }) => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
-	
-useEffect(() => {
-    const controller = new AbortController();
+	useEffect(() => {
+		const controller = new AbortController();
 
-    const getRoute = async () => {
-        try {
-            if (
-                !Number.isFinite(Number(deliveryBoyLat)) ||
-                !Number.isFinite(Number(deliveryBoyLon)) ||
-                !Number.isFinite(Number(customerLat)) ||
-                !Number.isFinite(Number(customerLon))
-            ) {
-                setLoading(false);
-                return;
-            }
+		const getRoute = async () => {
+			try {
+				if (
+					!Number.isFinite(Number(deliveryBoyLat)) ||
+					!Number.isFinite(Number(deliveryBoyLon)) ||
+					!Number.isFinite(Number(customerLat)) ||
+					!Number.isFinite(Number(customerLon))
+				) {
+					setLoading(false);
+					return;
+				}
 
-            setLoading(true);
-            setError("");
+				setLoading(true);
+				setError("");
 
-            const url =
-                `https://router.project-osrm.org/route/v1/driving/` +
-                `${deliveryBoyLon},${deliveryBoyLat};` +
-                `${customerLon},${customerLat}` +
-                `?overview=full&geometries=geojson`;
+				const url =
+					`https://router.project-osrm.org/route/v1/driving/` +
+					`${deliveryBoyLon},${deliveryBoyLat};` +
+					`${customerLon},${customerLat}` +
+					`?overview=full&geometries=geojson`;
 
-            const response = await fetch(url, {
-                signal: controller.signal,
-            });
+				const response = await fetch(url, {
+					signal: controller.signal,
+				});
 
-            if (!response.ok) {
-                throw new Error(`Route API Error: ${response.status}`);
-            }
+				if (!response.ok) {
+					throw new Error(`Route API Error: ${response.status}`);
+				}
 
-            const result = await response.json();
+				const result = await response.json();
 
-            if (result.code !== "Ok" || !result.routes?.length) {
-                throw new Error("No road route found");
-            }
+				if (result.code !== "Ok" || !result.routes?.length) {
+					throw new Error("No road route found");
+				}
 
-            const coordinates = result.routes[0].geometry.coordinates;
+				const coordinates = result.routes[0].geometry.coordinates;
 
-            setPath(
-                coordinates.map(([lon, lat]) => [lat, lon])
-            );
+				setPath(coordinates.map(([lon, lat]) => [lat, lon]));
+			} catch (err) {
+				if (err.name !== "AbortError") {
+					setError(err.message || "Unable to load route");
+				}
+			} finally {
+				if (!controller.signal.aborted) {
+					setLoading(false);
+				}
+			}
+		};
 
-        } catch (err) {
-            if (err.name !== "AbortError") {
-                setError(err.message || "Unable to load route");
-            }
-        } finally {
-            if (!controller.signal.aborted) {
-                setLoading(false);
-            }
-        }
-    };
+		const timer = setTimeout(getRoute, 1500);
 
-    const timer = setTimeout(getRoute, 1500);
-
-    return () => {
-        clearTimeout(timer);
-        controller.abort();
-    };
-
-}, [
-    deliveryBoyLat,
-    deliveryBoyLon,
-    customerLat,
-    customerLon,
-]);
-
+		return () => {
+			clearTimeout(timer);
+			controller.abort();
+		};
+	}, [deliveryBoyLat, deliveryBoyLon, customerLat, customerLon]);
 
 	const center = [deliveryBoyLat, deliveryBoyLon];
 
 	return (
-		<div className="w-full h-[400px] mt-3 rounded-xl overflow-hidden shadow-md relative">
+		<div className="w-full h-[400px] mt-3 rounded-2xl overflow-hidden border border-white/10 shadow-md relative">
 			<MapContainer
 				className="w-full h-full"
 				center={center}
@@ -151,8 +139,8 @@ useEffect(() => {
 					<>
 						<Polyline
 							positions={path}
-							color="blue"
-							weight={4}
+							color="#ff5e00"
+							weight={5}
 						/>
 						<FitRoute path={path} />
 					</>
@@ -160,13 +148,13 @@ useEffect(() => {
 			</MapContainer>
 
 			{loading && (
-				<div className="absolute top-3 left-3 z-[1000] bg-white px-3 py-2 rounded shadow">
+				<div className="absolute top-3 left-3 z-[1000] bg-[#141414]/90 border border-orange-500/35 text-orange-400 text-xs font-medium px-3.5 py-2 rounded-full shadow-lg">
 					Loading road route...
 				</div>
 			)}
 
 			{error && (
-				<div className="absolute top-3 left-3 z-[1000] bg-white text-red-600 px-3 py-2 rounded shadow">
+				<div className="absolute top-3 left-3 z-[1000] bg-[#141414]/90 border border-orange-500/50 text-orange-400 text-xs font-medium px-3.5 py-2 rounded-full shadow-lg">
 					{error}
 				</div>
 			)}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
@@ -20,7 +20,9 @@ import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
 import { io } from 'socket.io-client'
 import { setSocket } from './redux/user.slice'
-export const serverUrl = import.meta.env.VITE_SERVER_URL
+export const serverUrl = import.meta.env.DEV
+  ? import.meta.env.VITE_DEV_SERVER_URL || "http://localhost:5000"
+  : import.meta.env.VITE_SERVER_URL
 
 const App = () => {
   const {loading}= useGetCurrentUser()
@@ -43,7 +45,12 @@ const App = () => {
     };
   },[userData,dispatch])
   if(loading){
-    return <div className='min-h-screen flex justify-center items-center text-5xl text-[#ff4d2d]'>Loading...</div>
+    return (
+      <div className='min-h-screen bg-[#050505] flex flex-col justify-center items-center gap-4'>
+        <div className='w-12 h-12 rounded-full border-4 border-orange-500/20 border-t-orange-500 animate-spin' />
+        <p className='text-xl font-semibold tracking-wide text-orange-400'>Loading Foodie...</p>
+      </div>
+    )
   }
   
   return (
